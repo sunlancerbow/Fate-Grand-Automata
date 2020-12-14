@@ -33,9 +33,9 @@ sealed class Skill(
     ) : Skill(clickLocation, autoSkillCode) {
         companion object {
             val list = listOf(
-                Master(Location(1970, 620), 'j'),
-                Master(Location(2150, 620), 'k'),
-                Master(Location(2310, 620), 'l')
+                Master(Location(2020, 620), 'j'),
+                Master(Location(2200, 620), 'k'),
+                Master(Location(2360, 620), 'l')
             )
         }
     }

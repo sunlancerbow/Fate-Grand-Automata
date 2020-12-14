@@ -28,7 +28,7 @@ sealed class CommandCard(
             val list = listOf(
                 Face(
                     index = 1,
-                    clickLocation = Location(300, 1000),
+                    clickLocation = Location(400, 1000),
                     affinityRegion = Region(295, 650, 250, 200),
                     typeRegion = Region(0, 1060, 512, 200),
                     servantMatchRegion = Region(106, 800, 300, 200),
@@ -36,7 +36,7 @@ sealed class CommandCard(
                 ),
                 Face(
                     index = 2,
-                    clickLocation = Location(750, 1000),
+                    clickLocation = Location(850, 1000),
                     affinityRegion = Region(810, 650, 250, 200),
                     typeRegion = Region(512, 1060, 512, 200),
                     servantMatchRegion = Region(620, 800, 300, 200),
@@ -44,7 +44,7 @@ sealed class CommandCard(
                 ),
                 Face(
                     index = 3,
-                    clickLocation = Location(1300, 1000),
+                    clickLocation = Location(1400, 1000),
                     affinityRegion = Region(1321, 650, 250, 200),
                     typeRegion = Region(1024, 1060, 512, 200),
                     servantMatchRegion = Region(1130, 800, 300, 200),
@@ -52,7 +52,7 @@ sealed class CommandCard(
                 ),
                 Face(
                     index = 4,
-                    clickLocation = Location(1800, 1000),
+                    clickLocation = Location(1900, 1000),
                     affinityRegion = Region(1834, 650, 250, 200),
                     typeRegion = Region(1536, 1060, 512, 200),
                     servantMatchRegion = Region(1644, 800, 300, 200),
@@ -60,7 +60,7 @@ sealed class CommandCard(
                 ),
                 Face(
                     index = 5,
-                    clickLocation = Location(2350, 1000),
+                    clickLocation = Location(2450, 1000),
                     affinityRegion = Region(2348, 650, 250, 200),
                     typeRegion = Region(2048, 1060, 512, 200),
                     servantMatchRegion = Region(2160, 800, 300, 200),
