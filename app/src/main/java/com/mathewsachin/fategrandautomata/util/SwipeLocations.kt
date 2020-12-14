@@ -15,7 +15,7 @@ class SwipeLocations @Inject constructor() : ISwipeLocations {
 
     override val supportList: ISwipeLocations.SwipeLocation
         get() = ISwipeLocations.SwipeLocation(
-            Location(35, if (isNewSwipeMethod()) 1000 else 1190),
+            Location(135, if (isNewSwipeMethod()) 1000 else 1190),
             Location(5, if (isNewSwipeMethod()) 300 else 660)
         )
 
