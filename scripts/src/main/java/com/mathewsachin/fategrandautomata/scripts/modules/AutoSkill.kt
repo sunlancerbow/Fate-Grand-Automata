@@ -35,7 +35,7 @@ class AutoSkill(fgAutomataApi: IFgoAutomataApi) : IFgoAutomataApi by fgAutomataA
             selectSkillTarget(target)
         } else {
             // Close the window that opens up if skill is on cool-down
-            Game.battleExtraInfoWindowCloseClick.click()
+//            Game.battleExtraInfoWindowCloseClick.click()
         }
 
         waitForAnimationToFinish()
@@ -66,7 +66,7 @@ class AutoSkill(fgAutomataApi: IFgoAutomataApi) : IFgoAutomataApi by fgAutomataA
         0.5.seconds.wait()
 
         // Exit any extra menu
-        Game.battleExtraInfoWindowCloseClick.click()
+//        Game.battleExtraInfoWindowCloseClick.click()
     }
 
     private fun openMasterSkillMenu() {

@@ -87,19 +87,19 @@ sealed class CommandCard(
         companion object {
             val list = listOf(
                 NP(
-                    clickLocation = Location(1000, 220),
+                    clickLocation = Location(1000, 500),
                     autoSkillCode = '4',
                     servantMatchRegion = Region(678, 190, 300, 200),
                     servantCropRegion = Region(762, 290, 115, 65)
                 ),
                 NP(
-                    clickLocation = Location(1300, 400),
+                    clickLocation = Location(1300, 500),
                     autoSkillCode = '5',
                     servantMatchRegion = Region(1138, 190, 300, 200),
                     servantCropRegion = Region(1230, 290, 115, 65)
                 ),
                 NP(
-                    clickLocation = Location(1740, 400),
+                    clickLocation = Location(1740, 500),
                     autoSkillCode = '6',
                     servantMatchRegion = Region(1606, 190, 300, 200),
                     servantCropRegion = Region(1694, 290, 115, 65)

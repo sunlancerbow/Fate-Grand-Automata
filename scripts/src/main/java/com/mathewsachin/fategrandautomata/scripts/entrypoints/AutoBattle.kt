@@ -12,6 +12,7 @@ import com.mathewsachin.fategrandautomata.scripts.prefs.IPreferences
 import com.mathewsachin.libautomata.*
 import javax.inject.Inject
 import kotlin.math.absoluteValue
+import kotlin.time.milliseconds
 import kotlin.time.seconds
 
 /**
@@ -103,17 +104,17 @@ open class AutoBattle @Inject constructor(
         val screens: Map<() -> Boolean, () -> Unit> = mapOf(
             { battle.needsToRetry() } to { battle.retry() },
             { battle.isIdle() } to { battle.performBattle() },
-            { isInMenu() } to { menu() },
+//            { isInMenu() } to { menu() },
             { isInResult() } to { result() },
             { isInDropsScreen() } to { dropScreen() },
             { isInQuestRewardScreen() } to { questReward() },
             { isInSupport() } to { support() },
             { isRepeatScreen() } to { repeatQuest() },
-            { needsToWithdraw() } to { withdraw() },
-            { needsToStorySkip() } to { skipStory() },
-            { isFriendRequestScreen() } to { skipFriendRequestScreen() },
-            { isBond10CEReward() } to { bond10CEReward() },
-            { isCeRewardDetails() } to { ceRewardDetails() }
+//            { needsToWithdraw() } to { withdraw() },
+//            { needsToStorySkip() } to { skipStory() },
+//            { isFriendRequestScreen() } to { skipFriendRequestScreen() },
+//            { isBond10CEReward() } to { bond10CEReward() },
+//            { isCeRewardDetails() } to { ceRewardDetails() }
             //{ isGudaFinalRewardsScreen() } to { gudaFinalReward() }
         )
 
@@ -127,9 +128,13 @@ open class AutoBattle @Inject constructor(
                     .firstOrNull()
             }
 
-            actor?.invoke()
+            if (actor == null) {
+                Location(2850, 1400).click(10)
+            } else {
+                actor?.invoke()
 
-            1.seconds.wait()
+                500.milliseconds.wait()
+            }
         }
     }
 
