@@ -29,10 +29,12 @@ private fun calculateGameAreaWithoutBorders(
     val scaledScriptSize = ScriptSize * ScaleRate
 
     return Region(
-        calculateBorderThickness(
-            ScreenSize.Width,
-            scaledScriptSize.Width
-        ), // Offset(X)
+        // jp fullscreen
+        170,
+//        calculateBorderThickness(
+//            ScreenSize.Width,
+//            scaledScriptSize.Width
+//        ), // Offset(X)
         calculateBorderThickness(
             ScreenSize.Height,
             scaledScriptSize.Height

@@ -48,7 +48,7 @@ class Game @Inject constructor(val prefs: IPreferences) {
         val staminaOkClick = Location(1650, 1120)
 
         val supportScreenRegion = Region(0, 0, 200, 400)
-        val supportListRegion = Region(70, 332, 378, 1091) // see docs/support_list_region.png
+        val supportListRegion = Region(170, 332, 378, 1091) // see docs/support_list_region.png
         val supportFriendsRegion = Region(448, 332, 1210, 1091)
 
         val supportMaxAscendedRegion = Region(376, 0, 16, 120)
@@ -66,8 +66,8 @@ class Game @Inject constructor(val prefs: IPreferences) {
         val supportFirstSupportClick = Location(1900, 500)
 
         val supportRegionToolSearchRegion = Region(2100, 0, 370, 1440)
-        val supportDefaultBounds = Region(76, 0, 2356, 428)
-        val supportDefaultCeBounds = Region(76, 270, 378, 150)
+        val supportDefaultBounds = Region(176, 0, 2356, 428)
+        val supportDefaultCeBounds = Region(176, 270, 378, 150)
         val supportExtraRegion = Region(1200, 200, 130, 130)
         val supportNotFoundRegion = Region(468, 708, 100, 90)
 
