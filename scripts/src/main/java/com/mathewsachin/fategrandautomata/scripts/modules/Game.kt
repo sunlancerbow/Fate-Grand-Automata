@@ -18,14 +18,6 @@ fun IFgoAutomataApi.retry() {
     2.seconds.wait()
 }
 
-
-@ScriptScope
-class Phone @Inject constructor() {
-    companion object {
-        var s = ""
-    }
-}
-
 @ScriptScope
 class Game @Inject constructor(val prefs: IPreferences) {
     companion object {
@@ -39,7 +31,7 @@ class Game @Inject constructor(val prefs: IPreferences) {
         val menuStorySkipRegion = Region(2240, 20, 300, 120)
 
         val menuSelectQuestClick = Location(2290, 440)
-        val menuStartQuestClick = Location(2500, 1250)
+        val menuStartQuestClick = Location(2400, 1350)
         val continueBoostClick = Location(1260, 1120)
         val continueClick = Location(1650, 1120)
         val menuStorySkipClick = Location(2360, 80)
@@ -52,19 +44,11 @@ class Game @Inject constructor(val prefs: IPreferences) {
 
         val inventoryFullRegion = Region(1050, 900, 458, 90)
 
-        val staminaScreenRegion = Region(895, 250, 185, 200)
+        val staminaScreenRegion = Region(600, 200, 300, 300)
         val staminaOkClick = Location(1650, 1120)
 
-        val supportScreenRegion get() = when {
-            Phone.s.contains("Pixel 4 XL") -> Region(0, 0, 200, 400)
-            Phone.s.contains("SM-G") -> Region(-76, 0, 200, 400)
-            else -> Region(-76, 0, 200, 400)
-        }
-        val supportListRegion get() = when {
-            Phone.s.contains("Pixel 4 XL") -> Region(180, 332, 378, 1091)
-            Phone.s.contains("SM-G") -> Region(140, 332, 378, 1091)
-            else -> Region(130, 332, 378, 1091)
-        }// see docs/support_list_region.png
+        val supportScreenRegion = Region(0, 0, 200, 400)
+        val supportListRegion = Region(70, 332, 378, 1091) // see docs/support_list_region.png
         val supportFriendsRegion = Region(448, 332, 1210, 1091)
 
         val supportMaxAscendedRegion = Region(376, 0, 16, 120)
@@ -76,24 +60,16 @@ class Game @Inject constructor(val prefs: IPreferences) {
             supportListRegion.Height
         ) // see docs/friend_region.png
 
-        val supportUpdateClick = Location(1760, 250)
-        val supportUpdateYesClick = Location(1760, 1110)
+        val supportUpdateClick = Location(1670, 250)
+        val supportUpdateYesClick = Location(1480, 1110)
         val supportListTopClick = Location(2480, 360)
         val supportFirstSupportClick = Location(1900, 500)
 
-        val supportRegionToolSearchRegion get() = when {
-            Phone.s.contains("Pixel 4 XL") -> Region(2100, 0, 370, 1440)
-            Phone.s.contains("SM-G") -> Region(2100, 0, 370, 1440)
-            else -> Region(2150, 0, 370, 1440)
-        }
-        val supportDefaultBounds = Region(176, 0, 2356, 428)
-        val supportDefaultCeBounds = Region(176, 270, 378, 150)
+        val supportRegionToolSearchRegion = Region(2100, 0, 370, 1440)
+        val supportDefaultBounds = Region(76, 0, 2356, 428)
+        val supportDefaultCeBounds = Region(76, 270, 378, 150)
         val supportExtraRegion = Region(1200, 200, 130, 130)
-        val supportNotFoundRegion get() = when {
-            Phone.s.contains("Pixel 4 XL") -> Region(540, 708, 100, 90)
-            Phone.s.contains("SM-G") -> Region(475, 708, 100, 90)
-            else -> Region(460, 708, 100, 90)
-        }
+        val supportNotFoundRegion = Region(468, 708, 100, 90)
 
         val selectedPartyRegion = Region(1010, 62, 550, 72)
         val partySelectionArray = listOf(
@@ -109,17 +85,13 @@ class Game @Inject constructor(val prefs: IPreferences) {
             Location(1505, 100)
         )
 
-        val battleScreenRegion get() = when {
-            Phone.s.contains("Pixel 4 XL") -> Region(2215, 1259, 336, 116)
-            Phone.s.contains("SM-G") -> Region(2331, 1259, 336, 116)
-            else -> Region(2331, 1259, 336, 116)
-        }
+        val battleScreenRegion = Region(2105, 1259, 336, 116) // see docs/battle_region.png
 
         val battleExtraInfoWindowCloseClick = Location(2550, 10)
         val battleAttackClick = Location(2300, 1200)
         val battleSkillOkClick = Location(1680, 850)
 
-        val battleMasterSkillOpenClick = Location(2480, 640)
+        val battleMasterSkillOpenClick = Location(2380, 640)
         val battleOrderChangeOkClick = Location(1280, 1260)
 
         val battleBack = Location(2400, 1370)
@@ -127,11 +99,7 @@ class Game @Inject constructor(val prefs: IPreferences) {
         val resultScreenRegion = Region(100, 300, 700, 200)
         val resultBondRegion = Region(2000, 750, 120, 190)
         val resultMasterExpRegion = Region(1280, 350, 400, 110)
-        val resultMatRewardsRegion get() = when {
-            Phone.s.contains("Pixel 4 XL") -> Region(2170, 1220, 280, 200)
-            Phone.s.contains("SM-G") -> Region(2286, 1220, 280, 200)
-            else -> Region(2286, 1220, 280, 200)
-        }
+        val resultMatRewardsRegion = Region(2080, 1220, 280, 200)
         val resultMasterLvlUpRegion = Region(1990, 160, 250, 270)
 
         val resultCeDropRegion = Region(1860, 0, 240, 100)
@@ -150,16 +118,13 @@ class Game @Inject constructor(val prefs: IPreferences) {
         val friendPtSummonCheck = Region(1380, 1220, 75, 75)
         val continueSummonRegion = Region(1244, 1264, 580, 170)
 
-        val finishedLotteryBoxRegion get() = when {
-            Phone.s.contains("Pixel 4 XL") -> Region(540, 850, 140, 100)
-            Phone.s.contains("SM-G") -> Region(488, 850, 140, 100)
-            else -> Region(520, 850, 140, 100)
-        }
+        val finishedLotteryBoxRegion = Region(540, 860, 140, 100)
     }
 
-    val battleStageCountRegion get() = when {
-        Phone.s.contains("Pixel 4 XL") -> Region(1994, 25, 46, 53)
-        Phone.s.contains("SM-G") -> Region(1874, 25, 46, 53)
-        else -> Region(1970, 25, 46, 53)
-    }
+    val battleStageCountRegion
+        get() = when (prefs.gameServer) {
+            GameServerEnum.Tw -> Region(1710, 25, 55, 60)
+            GameServerEnum.Jp -> Region(1764, 28, 31, 44)
+            else -> Region(1722, 25, 46, 53)
+        }
 }
