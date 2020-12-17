@@ -130,6 +130,9 @@
     <string name="p_choose_folder_not_exist_message">無法讀取資料夾</string>
     <string name="p_choose_folder_action">選擇</string>
 
+    <string name="p_wait_ap_regen_text">等待體力回復</string>
+    <string name="p_wait_ap_regen_text_summary">AP用完之後FGA將不會立刻退出，而是會持續確認體力是否回復並重新開始刷關</string>
+
     <string name="p_advanced">進階</string>
     <string name="p_debug_mode">除錯模式</string>
     <string name="p_debug_mode_summary">將框出比對影像的區域</string>
