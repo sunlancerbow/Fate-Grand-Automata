@@ -18,6 +18,14 @@ fun IFgoAutomataApi.retry() {
     2.seconds.wait()
 }
 
+
+@ScriptScope
+class Phone @Inject constructor() {
+    companion object {
+        var s = ""
+    }
+}
+
 @ScriptScope
 class Game @Inject constructor(val prefs: IPreferences) {
     companion object {
@@ -31,7 +39,7 @@ class Game @Inject constructor(val prefs: IPreferences) {
         val menuStorySkipRegion = Region(2240, 20, 300, 120)
 
         val menuSelectQuestClick = Location(2290, 440)
-        val menuStartQuestClick = Location(2400, 1350)
+        val menuStartQuestClick = Location(2500, 1250)
         val continueBoostClick = Location(1260, 1120)
         val continueClick = Location(1650, 1120)
         val menuStorySkipClick = Location(2360, 80)
@@ -85,7 +93,11 @@ class Game @Inject constructor(val prefs: IPreferences) {
             Location(1505, 100)
         )
 
-        val battleScreenRegion = Region(2215, 1259, 336, 116) // see docs/battle_region.png
+        val battleScreenRegion get() = when (Phone.s) {
+            "Pixel 4 XL" -> Region(2215, 1259, 336, 116)
+            "SM-G975U" -> Region(2145, 1259, 336, 116)
+            else -> Region(2145, 1259, 336, 116)
+        }
 
         val battleExtraInfoWindowCloseClick = Location(2550, 10)
         val battleAttackClick = Location(2300, 1200)

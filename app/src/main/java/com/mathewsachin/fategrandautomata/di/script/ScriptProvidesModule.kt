@@ -3,6 +3,7 @@ package com.mathewsachin.fategrandautomata.di.script
 import android.widget.Toast
 import com.mathewsachin.fategrandautomata.scripts.FgoGameAreaManager
 import com.mathewsachin.fategrandautomata.scripts.modules.Game
+import com.mathewsachin.fategrandautomata.scripts.modules.Phone
 import com.mathewsachin.libautomata.ExitManager
 import com.mathewsachin.libautomata.GameAreaManager
 import com.mathewsachin.libautomata.IPlatformImpl
@@ -21,11 +22,11 @@ class ScriptProvidesModule {
     @ScriptScope
     @Provides
     fun provideGameAreaManager(platformImpl: IPlatformImpl): GameAreaManager {
+        Phone.s = android.os.Build.MODEL
         return FgoGameAreaManager(
             platformImpl,
             Game.scriptSize,
-            Game.imageSize,
-            android.os.Build.MODEL
+            Game.imageSize
         )
     }
 }

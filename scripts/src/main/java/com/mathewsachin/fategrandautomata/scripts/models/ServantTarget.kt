@@ -9,15 +9,15 @@ class ServantTarget private constructor(
     companion object {
         val list = listOf(
             ServantTarget(
-                Location(600, 880),
+                Location(700, 880),
                 '1'
             ),
             ServantTarget(
-                Location(1180, 880),
+                Location(1280, 880),
                 '2'
             ),
             ServantTarget(
-                Location(1800, 880),
+                Location(1900, 880),
                 '3'
             ),
 

@@ -1,5 +1,6 @@
 package com.mathewsachin.fategrandautomata.scripts
 
+import com.mathewsachin.fategrandautomata.scripts.modules.Phone
 import com.mathewsachin.libautomata.*
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
@@ -24,13 +25,20 @@ private fun calculateBorderThickness(Outer: Int, Inner: Int) =
 private fun calculateGameAreaWithoutBorders(
     ScriptSize: Size,
     ScreenSize: Size,
-    ScaleRate: Double,
-    phone: String
+    ScaleRate: Double
 ): Region {
     val scaledScriptSize = ScriptSize * ScaleRate
     var border = 170
-    if (!phone.contains("Pixel")) {
-        border = 110
+    border = when {
+        Phone.s.contains("Pixel 4 XL") -> {
+            170
+        }
+        Phone.s.contains("SM-G975U") -> {
+            110
+        }
+        else -> {
+            110
+        }
     }
     return Region(
         // jp fullscreen
@@ -51,8 +59,7 @@ private fun calculateGameAreaWithoutBorders(
 class FgoGameAreaManager(
     val platformImpl: IPlatformImpl,
     scriptSize: Size,
-    imageSize: Size,
-    phone: String
+    imageSize: Size
 ) : GameAreaManager {
     private val gameWithBorders = platformImpl.windowRegion
     private val scaleBy = decideScaleMethod(
@@ -63,8 +70,7 @@ class FgoGameAreaManager(
         calculateGameAreaWithoutBorders(
             scriptSize,
             gameWithBorders.size,
-            scaleBy.rate,
-            phone
+            scaleBy.rate
         )
 
     override val scriptDimension = when (scaleBy) {

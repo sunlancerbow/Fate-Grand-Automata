@@ -1,6 +1,9 @@
 package com.mathewsachin.fategrandautomata.scripts.models
 
+import com.mathewsachin.fategrandautomata.scripts.enums.GameServerEnum
+import com.mathewsachin.fategrandautomata.scripts.modules.Phone
 import com.mathewsachin.libautomata.Location
+import com.mathewsachin.libautomata.Region
 
 sealed class Skill(
     val clickLocation: Location,
@@ -11,18 +14,23 @@ sealed class Skill(
         autoSkillCode: Char
     ) : Skill(clickLocation, autoSkillCode) {
         companion object {
+            val jpfs get() = when (Phone.s) {
+                "Pixel 4 XL" -> 0
+                "SM-G975U" -> 100
+                else -> 100
+            }
             val list = listOf(
-                Servant(Location(0, 1100), 'a'),
-                Servant(Location(180, 1100), 'b'),
-                Servant(Location(360, 1100), 'c'),
+                Servant(Location(jpfs+0, 1100), 'a'),
+                Servant(Location(jpfs+180, 1100), 'b'),
+                Servant(Location(jpfs+360, 1100), 'c'),
 
-                Servant(Location(640, 1100), 'd'),
-                Servant(Location(820, 1100), 'e'),
-                Servant(Location(990, 1100), 'f'),
+                Servant(Location(jpfs+640, 1100), 'd'),
+                Servant(Location(jpfs+820, 1100), 'e'),
+                Servant(Location(jpfs+990, 1100), 'f'),
 
-                Servant(Location(1270, 1100), 'g'),
-                Servant(Location(1450, 1100), 'h'),
-                Servant(Location(1630, 1100), 'i')
+                Servant(Location(jpfs+1270, 1100), 'g'),
+                Servant(Location(jpfs+1450, 1100), 'h'),
+                Servant(Location(jpfs+1630, 1100), 'i')
             )
         }
     }
@@ -32,10 +40,15 @@ sealed class Skill(
         autoSkillCode: Char
     ) : Skill(clickLocation, autoSkillCode) {
         companion object {
+            val jpfs get() = when (Phone.s) {
+                "Pixel 4 XL" -> 0
+                "SM-G975U" -> -100
+                else -> -100
+            }
             val list = listOf(
-                Master(Location(1950, 640), 'j'),
-                Master(Location(2120, 640), 'k'),
-                Master(Location(2300, 640), 'l')
+                Master(Location(jpfs+1950, 640), 'j'),
+                Master(Location(jpfs+2120, 640), 'k'),
+                Master(Location(jpfs+2300, 640), 'l')
             )
         }
     }
