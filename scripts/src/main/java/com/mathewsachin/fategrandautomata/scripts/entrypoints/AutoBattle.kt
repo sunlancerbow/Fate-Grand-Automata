@@ -129,7 +129,7 @@ open class AutoBattle @Inject constructor(
             }
 
             if (actor == null) {
-                Location(2850, 1400).click(10)
+                Location(2710, 1400).click(10)
             } else {
                 actor?.invoke()
 

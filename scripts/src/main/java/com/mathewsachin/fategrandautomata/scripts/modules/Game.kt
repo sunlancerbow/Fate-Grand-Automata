@@ -91,7 +91,7 @@ class Game @Inject constructor(val prefs: IPreferences) {
         val battleAttackClick = Location(2300, 1200)
         val battleSkillOkClick = Location(1680, 850)
 
-        val battleMasterSkillOpenClick = Location(2490, 640)
+        val battleMasterSkillOpenClick = Location(2480, 640)
         val battleOrderChangeOkClick = Location(1280, 1260)
 
         val battleBack = Location(2400, 1370)

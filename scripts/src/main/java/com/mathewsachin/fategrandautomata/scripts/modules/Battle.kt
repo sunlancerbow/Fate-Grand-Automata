@@ -45,7 +45,7 @@ class Battle(fgAutomataApi: IFgoAutomataApi) : IFgoAutomataApi by fgAutomataApi 
         Game.battleAttackClick.click()
 
         // Wait for Attack button to disappear
-        Game.battleScreenRegion.waitVanish(images.battle, 5.seconds)
+        Game.battleScreenRegion.waitVanish(images.battle, 6.seconds)
 
         prefs.waitBeforeCards.wait()
 

@@ -12,17 +12,17 @@ sealed class Skill(
     ) : Skill(clickLocation, autoSkillCode) {
         companion object {
             val list = listOf(
-                Servant(Location(140, 1155), 'a'),
-                Servant(Location(328, 1155), 'b'),
-                Servant(Location(514, 1155), 'c'),
+                Servant(Location(0, 1100), 'a'),
+                Servant(Location(180, 1100), 'b'),
+                Servant(Location(360, 1100), 'c'),
 
-                Servant(Location(775, 1155), 'd'),
-                Servant(Location(963, 1155), 'e'),
-                Servant(Location(1150, 1155), 'f'),
+                Servant(Location(640, 1100), 'd'),
+                Servant(Location(820, 1100), 'e'),
+                Servant(Location(990, 1100), 'f'),
 
-                Servant(Location(1413, 1155), 'g'),
-                Servant(Location(1600, 1155), 'h'),
-                Servant(Location(1788, 1155), 'i')
+                Servant(Location(1270, 1100), 'g'),
+                Servant(Location(1450, 1100), 'h'),
+                Servant(Location(1630, 1100), 'i')
             )
         }
     }
@@ -33,9 +33,9 @@ sealed class Skill(
     ) : Skill(clickLocation, autoSkillCode) {
         companion object {
             val list = listOf(
-                Master(Location(2020, 620), 'j'),
-                Master(Location(2200, 620), 'k'),
-                Master(Location(2360, 620), 'l')
+                Master(Location(1950, 640), 'j'),
+                Master(Location(2120, 640), 'k'),
+                Master(Location(2300, 640), 'l')
             )
         }
     }
