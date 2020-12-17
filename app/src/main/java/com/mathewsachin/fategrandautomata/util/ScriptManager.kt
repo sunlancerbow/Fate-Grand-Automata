@@ -230,6 +230,8 @@ class ScriptManager @Inject constructor(
         val pickerItems = listOf(other) + battleConfigs.map { PickerItem.Battle(it) }
         var selected = pickerItems[initialSelectedIndex]
 
+        Toast.makeText(userInterface.Service, android.os.Build.MODEL, Toast.LENGTH_LONG).show()
+
         showOverlayDialog(context) {
             setTitle(R.string.select_script)
                 .apply {

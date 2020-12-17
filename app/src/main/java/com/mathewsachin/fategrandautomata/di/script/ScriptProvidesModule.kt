@@ -1,5 +1,6 @@
 package com.mathewsachin.fategrandautomata.di.script
 
+import android.widget.Toast
 import com.mathewsachin.fategrandautomata.scripts.FgoGameAreaManager
 import com.mathewsachin.fategrandautomata.scripts.modules.Game
 import com.mathewsachin.libautomata.ExitManager
@@ -23,7 +24,8 @@ class ScriptProvidesModule {
         return FgoGameAreaManager(
             platformImpl,
             Game.scriptSize,
-            Game.imageSize
+            Game.imageSize,
+            android.os.Build.MODEL
         )
     }
 }

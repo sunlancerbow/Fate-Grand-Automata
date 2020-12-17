@@ -24,13 +24,17 @@ private fun calculateBorderThickness(Outer: Int, Inner: Int) =
 private fun calculateGameAreaWithoutBorders(
     ScriptSize: Size,
     ScreenSize: Size,
-    ScaleRate: Double
+    ScaleRate: Double,
+    phone: String
 ): Region {
     val scaledScriptSize = ScriptSize * ScaleRate
-
+    var border = 170
+    if (!phone.contains("Pixel")) {
+        border = 110
+    }
     return Region(
         // jp fullscreen
-        170,
+        border,
 //        calculateBorderThickness(
 //            ScreenSize.Width,
 //            scaledScriptSize.Width
@@ -47,7 +51,8 @@ private fun calculateGameAreaWithoutBorders(
 class FgoGameAreaManager(
     val platformImpl: IPlatformImpl,
     scriptSize: Size,
-    imageSize: Size
+    imageSize: Size,
+    phone: String
 ) : GameAreaManager {
     private val gameWithBorders = platformImpl.windowRegion
     private val scaleBy = decideScaleMethod(
@@ -58,7 +63,8 @@ class FgoGameAreaManager(
         calculateGameAreaWithoutBorders(
             scriptSize,
             gameWithBorders.size,
-            scaleBy.rate
+            scaleBy.rate,
+            phone
         )
 
     override val scriptDimension = when (scaleBy) {
