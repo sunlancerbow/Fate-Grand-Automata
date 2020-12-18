@@ -96,7 +96,7 @@ class Game @Inject constructor(val prefs: IPreferences) {
         val battleScreenRegion get() = when (Phone.s) {
             "Pixel 4 XL" -> Region(2215, 1259, 336, 116)
             "SM-G975U" -> Region(2145, 1259, 336, 116)
-            else -> Region(2145, 1259, 336, 116)
+            else -> Region(2195, 1259, 336, 116)
         }
 
         val battleExtraInfoWindowCloseClick = Location(2550, 10)
@@ -114,7 +114,7 @@ class Game @Inject constructor(val prefs: IPreferences) {
         val resultMatRewardsRegion get() = when (Phone.s) {
             "Pixel 4 XL" -> Region(2170, 1220, 280, 200)
             "SM-G975U" -> Region(2100, 1220, 280, 200)
-            else -> Region(2100, 1220, 280, 200)
+            else -> Region(2140, 1220, 280, 200)
         }
         val resultMasterLvlUpRegion = Region(1990, 160, 250, 270)
 
@@ -140,6 +140,6 @@ class Game @Inject constructor(val prefs: IPreferences) {
     val battleStageCountRegion get() = when (Phone.s) {
         "Pixel 4 XL" -> Region(1994, 25, 46, 53)
         "SM-G975U" -> Region(1874, 25, 46, 53)
-        else -> Region(1874, 25, 46, 53)
+        else -> Region(1970, 25, 46, 53)
     }
 }
