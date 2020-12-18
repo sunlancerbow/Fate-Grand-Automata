@@ -137,9 +137,9 @@ class Game @Inject constructor(val prefs: IPreferences) {
         val finishedLotteryBoxRegion = Region(540, 860, 140, 100)
     }
 
-    val battleStageCountRegion
-        get() = when (prefs.gameServer) {
-            GameServerEnum.Tw -> Region(1710, 25, 55, 60)
-            else -> Region(1722, 25, 46, 53)
-        }
+    val battleStageCountRegion get() = when (Phone.s) {
+        "Pixel 4 XL" -> Region(1994, 25, 46, 53)
+        "SM-G975U" -> Region(1874, 25, 46, 53)
+        else -> Region(1874, 25, 46, 53)
+    }
 }
