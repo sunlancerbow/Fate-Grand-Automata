@@ -14,9 +14,9 @@ sealed class Skill(
         autoSkillCode: Char
     ) : Skill(clickLocation, autoSkillCode) {
         companion object {
-            val jpfs get() = when (Phone.s) {
-                "Pixel 4 XL" -> 0
-                "SM-G975U" -> 100
+            val jpfs get() = when {
+                Phone.s.contains("Pixel 4 XL") -> 0
+                Phone.s.contains("SM-G975U") -> 100
                 else -> 0
             }
             val list = listOf(
@@ -40,9 +40,9 @@ sealed class Skill(
         autoSkillCode: Char
     ) : Skill(clickLocation, autoSkillCode) {
         companion object {
-            val jpfs get() = when (Phone.s) {
-                "Pixel 4 XL" -> 0
-                "SM-G975U" -> -100
+            val jpfs get() = when {
+                Phone.s.contains("Pixel 4 XL") -> 0
+                Phone.s.contains("SM-G975U") -> -100
                 else -> -30
             }
             val list = listOf(
