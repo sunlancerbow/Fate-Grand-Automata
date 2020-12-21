@@ -3,6 +3,7 @@ package com.mathewsachin.fategrandautomata.scripts.entrypoints
 import com.mathewsachin.fategrandautomata.scripts.IFgoAutomataApi
 import com.mathewsachin.fategrandautomata.scripts.ISwipeLocations
 import com.mathewsachin.fategrandautomata.scripts.enums.GameServerEnum
+import com.mathewsachin.fategrandautomata.scripts.modules.Phone
 import com.mathewsachin.libautomata.*
 import javax.inject.Inject
 import kotlin.time.seconds
@@ -14,9 +15,17 @@ class AutoGiftBox @Inject constructor(
 ) : EntryPoint(exitManager), IFgoAutomataApi by fgAutomataApi {
     companion object {
         const val maxClickCount = 99
-        const val maxNullStreak = 3
-        val checkRegion = Region(1640, 400, 120, 2120)
-        val scrollEndRegion = Region(1820, 1421, 120, 19)
+        const val maxNullStreak = 4
+        val checkRegion get() = when {
+            Phone.s.contains("Pixel 4 XL") -> Region(1623, 330, 120, 1440)
+            Phone.s.contains("SM-G975U") -> Region(1575, 335, 120, 1440)
+            else -> Region(1600, 330, 120, 2120)
+        }
+        val scrollEndRegion get() = when {
+            Phone.s.contains("Pixel 4 XL") -> Region(1810, 1343, 120, 19)
+            Phone.s.contains("SM-G975U") -> Region(1755, 1343, 120, 19)
+            else -> Region(1800, 1343, 120, 19)
+        }
     }
 
     override fun script(): Nothing {
@@ -60,7 +69,7 @@ class AutoGiftBox @Inject constructor(
 
     private val countRegionX
         get() = when (prefs.gameServer) {
-            GameServerEnum.Jp -> 660
+            GameServerEnum.Jp -> 600
             GameServerEnum.En -> 800
             GameServerEnum.Kr -> 670
             GameServerEnum.Tw -> 700
@@ -73,8 +82,8 @@ class AutoGiftBox @Inject constructor(
 
         for (gift in checkRegion.findAll(images.giftBoxCheck).sorted()) {
             val countRegion = Region(countRegionX, gift.Region.Y - 120, 300, 100)
-            val iconRegion = Region(190, gift.Region.Y - 116, 300, 240)
-            val clickSpot = Location(1700, gift.Region.Y + 50)
+            val iconRegion = Region(140, gift.Region.Y - 116, 300, 240)
+            val clickSpot = Location(1680, gift.Region.Y + 50)
 
             val gold = images.goldXP in iconRegion
             val silver = !gold && images.silverXP in iconRegion
