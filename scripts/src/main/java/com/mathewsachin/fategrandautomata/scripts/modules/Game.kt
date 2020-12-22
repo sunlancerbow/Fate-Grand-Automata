@@ -134,7 +134,11 @@ class Game @Inject constructor(val prefs: IPreferences) {
         val friendPtSummonCheck = Region(1380, 1220, 75, 75)
         val continueSummonRegion = Region(1244, 1264, 580, 170)
 
-        val finishedLotteryBoxRegion = Region(540, 850, 140, 100)
+        val finishedLotteryBoxRegion get() = when {
+            Phone.s.contains("Pixel 4 XL") -> Region(540, 850, 140, 100)
+            Phone.s.contains("SM-G975U") -> Region(488, 850, 140, 100)
+            else -> Region(520, 850, 140, 100)
+        }
     }
 
     val battleStageCountRegion get() = when {
