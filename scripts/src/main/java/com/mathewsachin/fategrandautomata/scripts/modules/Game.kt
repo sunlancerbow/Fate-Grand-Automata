@@ -68,8 +68,8 @@ class Game @Inject constructor(val prefs: IPreferences) {
             supportListRegion.Height
         ) // see docs/friend_region.png
 
-        val supportUpdateClick = Location(1670, 250)
-        val supportUpdateYesClick = Location(1480, 1110)
+        val supportUpdateClick = Location(1760, 250)
+        val supportUpdateYesClick = Location(1760, 1110)
         val supportListTopClick = Location(2480, 360)
         val supportFirstSupportClick = Location(1900, 500)
 
@@ -77,7 +77,11 @@ class Game @Inject constructor(val prefs: IPreferences) {
         val supportDefaultBounds = Region(176, 0, 2356, 428)
         val supportDefaultCeBounds = Region(176, 270, 378, 150)
         val supportExtraRegion = Region(1200, 200, 130, 130)
-        val supportNotFoundRegion = Region(468, 708, 100, 90)
+        val supportNotFoundRegion get() = when {
+            Phone.s.contains("Pixel 4 XL") -> Region(540, 708, 100, 90)
+            Phone.s.contains("SM-G975U") -> Region(475, 708, 100, 90)
+            else -> Region(500, 708, 100, 90)
+        }
 
         val selectedPartyRegion = Region(1010, 62, 550, 72)
         val partySelectionArray = listOf(
