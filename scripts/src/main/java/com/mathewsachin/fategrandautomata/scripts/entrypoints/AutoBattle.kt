@@ -525,7 +525,7 @@ open class AutoBattle @Inject constructor(
     private fun startQuest() {
         selectParty()
 
-        Game.menuStartQuestClick.click()
+        game.menuStartQuestClick.click()
 
         2.seconds.wait()
 
