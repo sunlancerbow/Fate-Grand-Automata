@@ -1,9 +1,10 @@
 package com.mathewsachin.fategrandautomata.scripts.entrypoints
 
 import com.mathewsachin.fategrandautomata.scripts.IFgoAutomataApi
-import com.mathewsachin.fategrandautomata.scripts.enums.GameServerEnum
-import com.mathewsachin.fategrandautomata.scripts.modules.Phone
-import com.mathewsachin.libautomata.*
+import com.mathewsachin.libautomata.EntryPoint
+import com.mathewsachin.libautomata.ExitManager
+import com.mathewsachin.libautomata.Location
+import com.mathewsachin.libautomata.ScriptExitException
 import javax.inject.Inject
 import kotlin.time.seconds
 
@@ -13,17 +14,7 @@ class AutoGiftBox @Inject constructor(
 ) : EntryPoint(exitManager), IFgoAutomataApi by fgAutomataApi {
     companion object {
         const val maxClickCount = 99
-        const val maxNullStreak = 4
-        val checkRegion get() = when {
-            Phone.s.contains("Pixel 4 XL") -> Region(1623, 330, 120, 1440)
-            Phone.s.contains("SM-G") -> Region(1575, 335, 120, 1440)
-            else -> Region(1640, 330, 120, 2120)
-        }
-        val scrollEndRegion get() = when {
-            Phone.s.contains("Pixel 4 XL") -> Region(1810, 1343, 120, 19)
-            Phone.s.contains("SM-G") -> Region(1755, 1343, 120, 19)
-            else -> Region(1840, 1343, 120, 19)
-        }
+        const val maxNullStreak = 3
     }
 
     override fun script(): Nothing {
@@ -36,7 +27,7 @@ class AutoGiftBox @Inject constructor(
                 if (!aroundEnd) {
                     // The scrollbar end position matches before completely at end
                     // a few items can be left off if we're not careful
-                    aroundEnd = images.giftBoxScrollEnd in scrollEndRegion
+                    aroundEnd = images.giftBoxScrollEnd in game.giftBoxScrollEndRegion
                 }
 
                 pickGifts()
@@ -71,23 +62,16 @@ class AutoGiftBox @Inject constructor(
         throw ScriptExitException(messages.pickedExpStack(clickCount.coerceAtMost(maxClickCount)))
     }
 
-    private val countRegionX
-        get() = when (prefs.gameServer) {
-            GameServerEnum.Jp -> 600
-            GameServerEnum.En -> 800
-            GameServerEnum.Kr -> 670
-            GameServerEnum.Tw -> 700
-            else -> throw ScriptExitException("Not supported on this server yet")
-        }
-
     // Return picked count
     private fun pickGifts(): Int {
         var clickCount = 0
 
-        for (gift in checkRegion.findAll(images.giftBoxCheck).sorted()) {
-            val countRegion = Region(countRegionX, gift.Region.Y - 120, 300, 100)
-            val iconRegion = Region(140, gift.Region.Y - 116, 300, 240)
-            val clickSpot = Location(1680, gift.Region.Y + 50)
+        for (gift in game.giftBoxCheckRegion.findAll(images.giftBoxCheck).sorted()) {
+            val offset = Location(0, gift.Region.Y)
+
+            val countRegion = game.giftBoxCountRegion + offset
+            val iconRegion = game.giftBoxIconRegion + offset
+            val clickSpot = game.giftBoxClickSpot + offset
 
             val gold = images.goldXP in iconRegion
             val silver = !gold && images.silverXP in iconRegion
