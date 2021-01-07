@@ -56,7 +56,11 @@ class Game @Inject constructor(val prefs: IPreferences) {
         val staminaOkClick = Location(1650, 1120)
 
         val supportScreenRegion = Region(0, 0, 200, 400)
-        val supportListRegion = Region(170, 332, 378, 1091) // see docs/support_list_region.png
+        val supportListRegion get() = when {
+            Phone.s.contains("Pixel 4 XL") -> Region(180, 332, 378, 1091)
+            Phone.s.contains("SM-G975U") -> Region(140, 332, 378, 1091)
+            else -> Region(170, 332, 378, 1091)
+        }// see docs/support_list_region.png
         val supportFriendsRegion = Region(448, 332, 1210, 1091)
 
         val supportMaxAscendedRegion = Region(376, 0, 16, 120)
