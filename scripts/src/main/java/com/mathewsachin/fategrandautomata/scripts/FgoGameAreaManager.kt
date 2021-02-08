@@ -37,7 +37,7 @@ private fun calculateGameAreaWithoutBorders(
             110
         }
         else -> {
-            150
+            110
         }
     }
     return Region(

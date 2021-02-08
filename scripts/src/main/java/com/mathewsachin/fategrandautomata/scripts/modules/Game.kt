@@ -59,7 +59,7 @@ class Game @Inject constructor(val prefs: IPreferences) {
         val supportListRegion get() = when {
             Phone.s.contains("Pixel 4 XL") -> Region(180, 332, 378, 1091)
             Phone.s.contains("SM-G975U") -> Region(140, 332, 378, 1091)
-            else -> Region(170, 332, 378, 1091)
+            else -> Region(210, 332, 378, 1091)
         }// see docs/support_list_region.png
         val supportFriendsRegion = Region(448, 332, 1210, 1091)
 
@@ -84,7 +84,7 @@ class Game @Inject constructor(val prefs: IPreferences) {
         val supportNotFoundRegion get() = when {
             Phone.s.contains("Pixel 4 XL") -> Region(540, 708, 100, 90)
             Phone.s.contains("SM-G975U") -> Region(475, 708, 100, 90)
-            else -> Region(500, 708, 100, 90)
+            else -> Region(540, 708, 100, 90)
         }
 
         val selectedPartyRegion = Region(1010, 62, 550, 72)
@@ -104,7 +104,7 @@ class Game @Inject constructor(val prefs: IPreferences) {
         val battleScreenRegion get() = when {
             Phone.s.contains("Pixel 4 XL") -> Region(2215, 1259, 336, 116)
             Phone.s.contains("SM-G975U") -> Region(2145, 1259, 336, 116)
-            else -> Region(2195, 1259, 336, 116)
+            else -> Region(2235, 1259, 336, 116)
         }
 
         val battleExtraInfoWindowCloseClick = Location(2550, 10)
@@ -122,7 +122,7 @@ class Game @Inject constructor(val prefs: IPreferences) {
         val resultMatRewardsRegion get() = when {
             Phone.s.contains("Pixel 4 XL") -> Region(2170, 1220, 280, 200)
             Phone.s.contains("SM-G975U") -> Region(2100, 1220, 280, 200)
-            else -> Region(2140, 1220, 280, 200)
+            else -> Region(2180, 1220, 280, 200)
         }
         val resultMasterLvlUpRegion = Region(1990, 160, 250, 270)
 
@@ -145,13 +145,13 @@ class Game @Inject constructor(val prefs: IPreferences) {
         val finishedLotteryBoxRegion get() = when {
             Phone.s.contains("Pixel 4 XL") -> Region(540, 850, 140, 100)
             Phone.s.contains("SM-G975U") -> Region(488, 850, 140, 100)
-            else -> Region(520, 850, 140, 100)
+            else -> Region(560, 850, 140, 100)
         }
     }
 
     val battleStageCountRegion get() = when {
         Phone.s.contains("Pixel 4 XL") -> Region(1994, 25, 46, 53)
         Phone.s.contains("SM-G975U") -> Region(1874, 25, 46, 53)
-        else -> Region(1970, 25, 46, 53)
+        else -> Region(2010, 25, 46, 53)
     }
 }
