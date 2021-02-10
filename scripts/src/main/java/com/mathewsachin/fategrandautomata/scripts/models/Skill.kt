@@ -43,7 +43,7 @@ sealed class Skill(
             val jpfs get() = when {
                 Phone.s.contains("Pixel 4 XL") -> 0
                 Phone.s.contains("SM-G975U") -> -100
-                else -> -30
+                else -> -70
             }
             val list = listOf(
                 Master(Location(jpfs+1950, 640), 'j'),
