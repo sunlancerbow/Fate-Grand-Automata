@@ -81,7 +81,11 @@ class Game @Inject constructor(val prefs: IPreferences) {
         val supportListTopClick = Location(2480, 360)
         val supportFirstSupportClick = Location(1900, 500)
 
-        val supportRegionToolSearchRegion = Region(2100, 0, 370, 1440)
+        val supportRegionToolSearchRegion get() = when {
+            Phone.s.contains("Pixel 4 XL") -> Region(2100, 0, 370, 1440)
+            Phone.s.contains("SM-G975U") -> Region(2100, 0, 370, 1440)
+            else -> Region(2150, 0, 370, 1440)
+        }
         val supportDefaultBounds = Region(176, 0, 2356, 428)
         val supportDefaultCeBounds = Region(176, 270, 378, 150)
         val supportExtraRegion = Region(1200, 200, 130, 130)
