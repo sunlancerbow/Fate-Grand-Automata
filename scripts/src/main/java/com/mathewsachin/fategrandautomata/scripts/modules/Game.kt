@@ -52,13 +52,13 @@ class Game @Inject constructor(val prefs: IPreferences) {
 
         val inventoryFullRegion = Region(1050, 900, 458, 90)
 
-        val staminaScreenRegion = Region(600, 200, 300, 300)
+        val staminaScreenRegion = Region(895, 250, 185, 200)
         val staminaOkClick = Location(1650, 1120)
 
         val supportScreenRegion get() = when {
             Phone.s.contains("Pixel 4 XL") -> Region(0, 0, 200, 400)
-            Phone.s.contains("SM-G") -> Region(22, 0, 200, 400)
-            else -> Region(22, 0, 200, 400)
+            Phone.s.contains("SM-G") -> Region(-76, 0, 200, 400)
+            else -> Region(-76, 0, 200, 400)
         }
         val supportListRegion get() = when {
             Phone.s.contains("Pixel 4 XL") -> Region(180, 332, 378, 1091)
@@ -111,8 +111,8 @@ class Game @Inject constructor(val prefs: IPreferences) {
 
         val battleScreenRegion get() = when {
             Phone.s.contains("Pixel 4 XL") -> Region(2215, 1259, 336, 116)
-            Phone.s.contains("SM-G") -> Region(2431, 1259, 336, 116)
-            else -> Region(2431, 1259, 336, 116)
+            Phone.s.contains("SM-G") -> Region(2331, 1259, 336, 116)
+            else -> Region(2331, 1259, 336, 116)
         }
 
         val battleExtraInfoWindowCloseClick = Location(2550, 10)
@@ -129,8 +129,8 @@ class Game @Inject constructor(val prefs: IPreferences) {
         val resultMasterExpRegion = Region(1280, 350, 400, 110)
         val resultMatRewardsRegion get() = when {
             Phone.s.contains("Pixel 4 XL") -> Region(2170, 1220, 280, 200)
-            Phone.s.contains("SM-G") -> Region(2386, 1220, 280, 200)
-            else -> Region(2386, 1220, 280, 200)
+            Phone.s.contains("SM-G") -> Region(2286, 1220, 280, 200)
+            else -> Region(2286, 1220, 280, 200)
         }
         val resultMasterLvlUpRegion = Region(1990, 160, 250, 270)
 
