@@ -16,7 +16,7 @@ sealed class Skill(
         companion object {
             val jpfs get() = when {
                 Phone.s.contains("Pixel 4 XL") -> 0
-                Phone.s.contains("SM-G975U") -> 100
+                Phone.s.contains("SM-G") -> 100
                 else -> 0
             }
             val list = listOf(
@@ -42,7 +42,7 @@ sealed class Skill(
         companion object {
             val jpfs get() = when {
                 Phone.s.contains("Pixel 4 XL") -> 0
-                Phone.s.contains("SM-G975U") -> -100
+                Phone.s.contains("SM-G") -> -100
                 else -> -70
             }
             val list = listOf(

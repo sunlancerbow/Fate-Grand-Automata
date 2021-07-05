@@ -33,7 +33,7 @@ private fun calculateGameAreaWithoutBorders(
         Phone.s.contains("Pixel 4 XL") -> {
             170
         }
-        Phone.s.contains("SM-G975U") -> {
+        Phone.s.contains("SM-G") -> {
             110
         }
         else -> {

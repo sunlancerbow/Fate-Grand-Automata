@@ -18,12 +18,12 @@ class AutoGiftBox @Inject constructor(
         const val maxNullStreak = 4
         val checkRegion get() = when {
             Phone.s.contains("Pixel 4 XL") -> Region(1623, 330, 120, 1440)
-            Phone.s.contains("SM-G975U") -> Region(1575, 335, 120, 1440)
+            Phone.s.contains("SM-G") -> Region(1575, 335, 120, 1440)
             else -> Region(1640, 330, 120, 2120)
         }
         val scrollEndRegion get() = when {
             Phone.s.contains("Pixel 4 XL") -> Region(1810, 1343, 120, 19)
-            Phone.s.contains("SM-G975U") -> Region(1755, 1343, 120, 19)
+            Phone.s.contains("SM-G") -> Region(1755, 1343, 120, 19)
             else -> Region(1840, 1343, 120, 19)
         }
     }
