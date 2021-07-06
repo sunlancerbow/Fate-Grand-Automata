@@ -290,6 +290,11 @@ class Game @Inject constructor(
             .xFromRight()
             .yFromBottom()
 
+    var spamClick =
+    Location(-1, -20)
+    .xFromRight()
+    .yFromBottom()
+
     val battleMasterSkillOpenClick
         get() =
             if (isJp)

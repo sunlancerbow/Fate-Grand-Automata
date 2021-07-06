@@ -143,7 +143,7 @@ open class AutoBattle @Inject constructor(
         val screens: Map<() -> Boolean, () -> Unit> = mapOf(
             { battle.needsToRetry() } to { battle.retry() },
             { battle.isIdle() } to { battle.performBattle() },
-//            { isInMenu() } to { menu() },
+            { isInMenu() } to { menu() },
             { isInResult() } to { result() },
             { isInDropsScreen() } to { dropScreen() },
             { isInQuestRewardScreen() } to { questReward() },
@@ -168,7 +168,7 @@ open class AutoBattle @Inject constructor(
             }
 
             if (actor == null) {
-                Location(2850, 1350).click(10)
+                game.spamClick.click(10)
             } else {
                 actor?.invoke()
 
