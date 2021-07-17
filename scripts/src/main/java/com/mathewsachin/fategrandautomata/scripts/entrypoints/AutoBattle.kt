@@ -171,12 +171,12 @@ open class AutoBattle @Inject constructor(
             { isInQuestRewardScreen() } to { questReward() },
             { isInSupport() } to { support() },
             { isRepeatScreen() } to { repeatQuest() },
-            { needsToWithdraw() } to { withdraw() },
-            { needsToStorySkip() } to { skipStory() },
-            { isFriendRequestScreen() } to { skipFriendRequestScreen() },
-            { isBond10CEReward() } to { bond10CEReward() },
-            { isCeRewardDetails() } to { ceRewardDetails() },
-            { isDeathAnimation() } to { game.skipDeathAnimationClick.click() }
+//            { needsToWithdraw() } to { withdraw() },
+//            { needsToStorySkip() } to { skipStory() },
+//            { isFriendRequestScreen() } to { skipFriendRequestScreen() },
+//            { isBond10CEReward() } to { bond10CEReward() },
+//            { isCeRewardDetails() } to { ceRewardDetails() },
+//            { isDeathAnimation() } to { game.skipDeathAnimationClick.click() }
         )
 
         // Loop through SCREENS until a Validator returns true
@@ -189,8 +189,11 @@ open class AutoBattle @Inject constructor(
                     .firstOrNull()
             }
 
-            actor?.invoke()
-
+            if (actor == null) {
+                game.spamClick.click(10)
+            } else {
+                actor?.invoke()
+            }
             Duration.seconds(1).wait()
         }
     }
