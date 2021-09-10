@@ -1,5 +1,6 @@
 package com.mathewsachin.fategrandautomata.root
 
+import com.mathewsachin.fategrandautomata.util.KnownException
 import java.io.DataInputStream
 import java.io.DataOutputStream
 
@@ -14,7 +15,7 @@ class SuperUser : AutoCloseable {
     /**
      * Requests superuser rights and checks if the attempt was successful.
      *
-     * @throws Exception if the attempt was unsuccessful
+     * @throws [KnownException] if the attempt was unsuccessful
      */
     init {
         try {
@@ -33,7 +34,7 @@ class SuperUser : AutoCloseable {
                 throw Exception("Not root user")
             }
         } catch (e: Exception) {
-            throw Exception("Failed to get Root permission", e)
+            throw KnownException(KnownException.Reason.FailedRootPermission(e))
         }
     }
 

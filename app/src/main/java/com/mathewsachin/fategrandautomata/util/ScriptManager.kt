@@ -2,16 +2,18 @@ package com.mathewsachin.fategrandautomata.util
 
 import android.app.Service
 import android.content.Context
+import android.content.DialogInterface
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import com.mathewsachin.fategrandautomata.R
 import com.mathewsachin.fategrandautomata.accessibility.ScriptRunnerService
 import com.mathewsachin.fategrandautomata.accessibility.ScriptRunnerUIState
 import com.mathewsachin.fategrandautomata.accessibility.ScriptRunnerUserInterface
+import com.mathewsachin.fategrandautomata.accessibility.TapperService
 import com.mathewsachin.fategrandautomata.di.script.ScriptComponentBuilder
 import com.mathewsachin.fategrandautomata.di.script.ScriptEntryPoint
 import com.mathewsachin.fategrandautomata.prefs.core.PrefsCore
 import com.mathewsachin.fategrandautomata.scripts.entrypoints.*
+import com.mathewsachin.fategrandautomata.scripts.enums.GameServerEnum
 import com.mathewsachin.fategrandautomata.scripts.enums.ScriptModeEnum
 import com.mathewsachin.fategrandautomata.scripts.prefs.IPreferences
 import com.mathewsachin.fategrandautomata.ui.exit.BattleExit
@@ -21,7 +23,6 @@ import com.mathewsachin.fategrandautomata.ui.support_img_namer.showSupportImageN
 import com.mathewsachin.libautomata.EntryPoint
 import com.mathewsachin.libautomata.IScreenshotService
 import com.mathewsachin.libautomata.ScriptAbortException
-import com.mathewsachin.libautomata.messageAndStackTrace
 import dagger.hilt.EntryPoints
 import dagger.hilt.android.scopes.ServiceScoped
 import kotlinx.coroutines.*
@@ -58,7 +59,7 @@ class ScriptManager @Inject constructor(
         exception: AutoBattle.ExitException
     ) = withContext(Dispatchers.Main) {
         suspendCancellableCoroutine<Unit> { continuation ->
-            var dialog: AlertDialog? = null
+            var dialog: DialogInterface? = null
 
             val composeView = FakedComposeView(context) {
                 BattleExit(
@@ -152,6 +153,10 @@ class ScriptManager @Inject constructor(
                 message(scriptExitedString, msg)
             }
             is AutoBattle.ExitException -> {
+                if (e.reason !is AutoBattle.ExitReason.Abort) {
+                    messages.notify(scriptExitedString)
+                }
+
                 showBattleExit(service, e)
             }
             is ScriptAbortException -> {
@@ -164,6 +169,11 @@ class ScriptManager @Inject constructor(
 
                 messages.notify(msg)
                 message(scriptExitedString, msg)
+            }
+            is KnownException -> {
+                messages.notify(scriptExitedString)
+
+                message(scriptExitedString, e.reason.msg)
             }
             else -> {
                 println(e.messageAndStackTrace)
@@ -292,7 +302,7 @@ class ScriptManager @Inject constructor(
         detectedMode: ScriptModeEnum,
         entryPointRunner: () -> Unit
     ) {
-        var dialog: AlertDialog? = null
+        var dialog: DialogInterface? = null
 
         val composeView = FakedComposeView(context) {
             ScriptLauncher(

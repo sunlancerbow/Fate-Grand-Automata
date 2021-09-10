@@ -1,6 +1,4 @@
-# Preserve line numbers for debugging stack traces.
--keepattributes SourceFile,LineNumberTable
-
+-keepattributes LineNumberTable,SourceFile
 -keep class org.opencv.core.CvException { *; }
 
 -keep class com.mathewsachin.fategrandautomata.scripts.enums.GameServerEnum { *; }

@@ -3,8 +3,10 @@ package com.mathewsachin.fategrandautomata.scripts.modules
 import com.mathewsachin.fategrandautomata.SupportImageKind
 import com.mathewsachin.fategrandautomata.scripts.IFgoAutomataApi
 import com.mathewsachin.fategrandautomata.scripts.Images
+import com.mathewsachin.fategrandautomata.scripts.ScriptLog
 import com.mathewsachin.fategrandautomata.scripts.ScriptNotify
 import com.mathewsachin.fategrandautomata.scripts.entrypoints.AutoBattle
+import com.mathewsachin.fategrandautomata.scripts.enums.GameServerEnum
 import com.mathewsachin.fategrandautomata.scripts.enums.SupportClass
 import com.mathewsachin.fategrandautomata.scripts.enums.SupportSelectionModeEnum
 import com.mathewsachin.fategrandautomata.scripts.models.SearchFunctionResult
@@ -13,8 +15,6 @@ import com.mathewsachin.libautomata.IPattern
 import com.mathewsachin.libautomata.Location
 import com.mathewsachin.libautomata.Region
 import com.mathewsachin.libautomata.Size
-import timber.log.Timber
-import timber.log.debug
 import kotlin.streams.asStream
 import kotlin.streams.toList
 import kotlin.time.Duration
@@ -214,7 +214,7 @@ class Support(
                     else -> findSupportBounds(it.Support)
                 }
 
-                val ceBounds = game.supportDefaultCeBounds + Location(0, supportBounds.Y)
+                val ceBounds = game.supportDefaultCeBounds + Location(0, supportBounds.y)
                 findCraftEssences(ceBounds).firstOrNull()
                     ?.let { ce -> FoundServantAndCE(supportBounds, ce) }
             }
@@ -245,7 +245,7 @@ class Support(
 
             patterns.forEach { pattern ->
                 for (theFriend in game.supportFriendsRegion.findAll(pattern).sorted()) {
-                    return SearchFunctionResult.Found(theFriend.Region)
+                    return SearchFunctionResult.Found(theFriend.region)
                 }
             }
         }
@@ -268,11 +268,11 @@ class Support(
                 cropFriendLock(pattern).use { cropped ->
                     game.supportListRegion
                         .findAll(cropped)
-                        .filter { !autoSkillPrefs.maxAscended || isMaxAscended(it.Region) }
+                        .filter { !autoSkillPrefs.maxAscended || isMaxAscended(it.region) }
                         .map {
                             if (skillCheckNeeded)
-                                SearchFunctionResult.FoundWithBounds(it.Region, findSupportBounds(it.Region))
-                            else SearchFunctionResult.Found(it.Region)
+                                SearchFunctionResult.FoundWithBounds(it.region, findSupportBounds(it.region))
+                            else SearchFunctionResult.Found(it.region)
                         }
                         .filter {
                             it !is SearchFunctionResult.FoundWithBounds || checkMaxedSkills(it.Bounds, needMaxedSkills)
@@ -319,7 +319,7 @@ class Support(
                 SearchRegion
                     .findAll(pattern)
                     .asStream()
-                    .map { FoundCE(it.Region, isLimitBroken(it.Region)) }
+                    .map { FoundCE(it.region, isLimitBroken(it.region)) }
                     .filter { !autoSkillPrefs.mlb || it.mlb }
             }
             .toList()
@@ -333,11 +333,11 @@ class Support(
             )
             .map {
                 game.supportDefaultBounds
-                    .copy(Y = it.Region.Y - 70)
+                    .copy(y = it.region.y - 70)
             }
             .firstOrNull { Support in it }
             ?: game.supportDefaultBounds.also {
-                Timber.debug { "Default Region being returned" }
+                messages.log(ScriptLog.DefaultSupportBounds)
             }
 
     private fun isFriend(Region: Region): Boolean {
@@ -361,26 +361,29 @@ class Support(
 
     private fun isMaxAscended(servant: Region): Boolean {
         val maxAscendedRegion = game.supportMaxAscendedRegion
-            .copy(Y = servant.Y)
+            .copy(y = servant.y)
 
         return isStarPresent(maxAscendedRegion)
     }
 
     private fun isLimitBroken(CraftEssence: Region): Boolean {
         val limitBreakRegion = game.supportLimitBreakRegion
-            .copy(Y = CraftEssence.Y)
+            .copy(y = CraftEssence.y)
 
         return isStarPresent(limitBreakRegion)
     }
 
     private fun checkMaxedSkills(bounds: Region, needMaxedSkills: List<Boolean>): Boolean {
-        val y = bounds.Y + 325
-        val x = bounds.X + 1627
+        val y = bounds.y + 325
+        val x = bounds.x + 1620
+
+        val appendSkillsIntroduced = prefs.gameServer == GameServerEnum.Jp
+        val skillMargin = if (appendSkillsIntroduced) 90 else 155
 
         val skillLoc = listOf(
             Location(x, y),
-            Location(x + 156, y),
-            Location(x + 310, y)
+            Location(x + skillMargin, y),
+            Location(x + 2 * skillMargin, y)
         )
 
         val result = skillLoc
@@ -389,23 +392,18 @@ class Support(
                 if (!shouldBeMaxed)
                     true
                 else {
-                    val skillRegion = Region(location, Size(35, 45))
+                    val skillRegion = Region(location, Size(50, 50))
+
                     skillRegion.exists(images[Images.SkillTen], similarity = 0.68)
                 }
             }
 
-        Timber.debug {
-            // Detected skill levels as string for debugging
-            result
-                .zip(needMaxedSkills)
-                .joinToString("/") { (success, shouldBeMaxed) ->
-                    when {
-                        !shouldBeMaxed -> "x"
-                        success -> "10"
-                        else -> "f"
-                    }
-                }
-        }
+        messages.log(
+            ScriptLog.MaxSkills(
+                needMaxedSkills = needMaxedSkills,
+                isSkillMaxed = result
+            )
+        )
 
         return result.all { it }
     }

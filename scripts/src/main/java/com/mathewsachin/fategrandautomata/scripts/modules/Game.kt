@@ -1,12 +1,9 @@
 package com.mathewsachin.fategrandautomata.scripts.modules
 
-import com.mathewsachin.fategrandautomata.scripts.IFgoAutomataApi
-import com.mathewsachin.fategrandautomata.scripts.IImageLoader
-import com.mathewsachin.fategrandautomata.scripts.Images
+import com.mathewsachin.fategrandautomata.scripts.*
 import com.mathewsachin.fategrandautomata.scripts.enums.GameServerEnum
 import com.mathewsachin.fategrandautomata.scripts.enums.RefillResourceEnum
 import com.mathewsachin.fategrandautomata.scripts.enums.SupportClass
-import com.mathewsachin.fategrandautomata.scripts.isWide
 import com.mathewsachin.fategrandautomata.scripts.models.*
 import com.mathewsachin.fategrandautomata.scripts.prefs.IPreferences
 import com.mathewsachin.fategrandautomata.scripts.prefs.isNewUI
@@ -17,8 +14,6 @@ import com.mathewsachin.libautomata.Region
 import com.mathewsachin.libautomata.dagger.ScriptScope
 import com.mathewsachin.libautomata.extensions.IAutomataExtensions
 import com.mathewsachin.libautomata.extensions.ITransformationExtensions
-import timber.log.Timber
-import timber.log.debug
 import javax.inject.Inject
 import kotlin.math.roundToInt
 import kotlin.time.Duration
@@ -34,11 +29,12 @@ fun IFgoAutomataApi.retry() {
 @ScriptScope
 class Game @Inject constructor(
     platformImpl: IPlatformImpl,
-    val prefs: IPreferences,
-    val images: IImageLoader,
+    private val prefs: IPreferences,
+    private val images: IImageLoader,
     transformationExtensions: ITransformationExtensions,
     gameAreaManager: GameAreaManager,
-    val automataApi: IAutomataExtensions
+    private val automataApi: IAutomataExtensions,
+    private val messages: IScriptMessages
 ) {
     val scriptArea =
         Region(
@@ -49,10 +45,10 @@ class Game @Inject constructor(
     val isWide = prefs.isNewUI && scriptArea.isWide()
 
     fun Location.xFromCenter() =
-        this + Location(scriptArea.center.X, 0)
+        this + Location(scriptArea.center.x, 0)
 
     fun Region.xFromCenter() =
-        this + Location(scriptArea.center.X, 0)
+        this + Location(scriptArea.center.x, 0)
 
     fun Location.xFromRight() =
         this + Location(scriptArea.right, 0)
@@ -73,18 +69,17 @@ class Game @Inject constructor(
             Region(-400, 360, 400, 80)
                 .xFromRight()
                 .find(images[Images.BattleMenu])
-                ?.Region
+                ?.region
                 ?.center
-                ?.copy(Y = 0)
+                ?.copy(y = 0)
                 ?: Location(-298, 0).xFromRight().also {
-                    Timber.debug { "Defaulting master offset" }
+                    messages.log(ScriptLog.DefaultMasterOffset)
                 }
         }
     }
 
     val continueRegion = Region(120, 1000, 800, 200).xFromCenter()
     val continueBoostClick = Location(-20, 1120).xFromCenter()
-    val continueClick = Location(370, 1120).xFromCenter()
 
     val inventoryFullRegion = Region(-280, 860, 560, 190).xFromCenter()
 
@@ -140,7 +135,7 @@ class Game @Inject constructor(
     val supportOffset =
         if (isWide) {
             val width = 2560 - 94 - 145
-            val total = scriptArea.Width - 305 - 270
+            val total = scriptArea.width - 305 - 270
             val border = ((total - width) / 2.0).roundToInt()
 
             Location(305 + border, 0)
@@ -150,9 +145,9 @@ class Game @Inject constructor(
 
     val supportFriendRegion = Region(
         2140,
-        supportListRegion.Y,
+        supportListRegion.y,
         120,
-        supportListRegion.Height
+        supportListRegion.height
     ) + supportOffset
 
     val supportFriendsRegion = Region(354, 332, 1210, 1091) + supportOffset
@@ -290,8 +285,8 @@ class Game @Inject constructor(
                 val skill3Location = locate(it)
 
                 Region(
-                    skill3Location.X + 35,
-                    skill3Location.Y + 67,
+                    skill3Location.x + 35,
+                    skill3Location.y + 67,
                     120,
                     120
                 )
@@ -346,9 +341,9 @@ class Game @Inject constructor(
     val resultCeRewardDetailsRegion = Region(if (isWide) 193 else 0, 512, 135, 115)
     val resultCeRewardCloseClick = Location(if (isWide) 265 else 80, 60)
 
-    val fpSummonCheck = Region(100, 1220, 75, 75).xFromCenter()
+    val fpSummonCheck = Region(100, 1152, 75, 143).xFromCenter()
     val fpContinueSummonRegion = Region(-36, 1264, 580, 170).xFromCenter()
-    val fpFirst10SummonClick = Location(120, 1120).xFromCenter()
+    val fpFirst10SummonClick = Location(120, 1062).xFromCenter()
     val fpOkClick = Location(320, 1120).xFromCenter()
     val fpContinueSummonClick = Location(320, 1325).xFromCenter()
     val fpSkipRapidClick = Location(1240, 1400).xFromCenter()
@@ -435,7 +430,7 @@ class Game @Inject constructor(
 
     fun supportCheckRegion(card: CommandCard) = when (card) {
         is CommandCard.Face -> affinityRegion(card) + Location(-50, 100)
-        is CommandCard.NP -> (servantMatchRegion(card) + Location(110, -30)).copy(Height = 170)
+        is CommandCard.NP -> (servantMatchRegion(card) + Location(110, -30)).copy(height = 170)
     }
 
     fun servantOpenDetailsClick(slot: ServantSlot) =
@@ -444,7 +439,7 @@ class Game @Inject constructor(
             ServantSlot.B -> Skill.Servant.B2
             ServantSlot.C -> Skill.Servant.C2
         }.let {
-            Location(locate(it).X, 810)
+            Location(locate(it).x, 810)
         }
 
     fun servantChangeCheckRegion(slot: ServantSlot) =
@@ -453,7 +448,7 @@ class Game @Inject constructor(
             ServantSlot.B -> Skill.Servant.B2
             ServantSlot.C -> Skill.Servant.C2
         }.let {
-            val x = locate(it).X
+            val x = locate(it).x
 
             Region(x + 20, 930, 40, 80)
         }
@@ -464,7 +459,7 @@ class Game @Inject constructor(
             ServantSlot.B -> Skill.Servant.B2
             ServantSlot.C -> Skill.Servant.C2
         }.let {
-            val x = locate(it).X
+            val x = locate(it).x
 
             Region(x + 25, 710, 300, 170)
         }

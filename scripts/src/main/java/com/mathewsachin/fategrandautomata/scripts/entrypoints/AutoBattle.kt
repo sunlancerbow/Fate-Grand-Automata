@@ -3,6 +3,7 @@ package com.mathewsachin.fategrandautomata.scripts.entrypoints
 import com.mathewsachin.fategrandautomata.IStorageProvider
 import com.mathewsachin.fategrandautomata.scripts.IFgoAutomataApi
 import com.mathewsachin.fategrandautomata.scripts.Images
+import com.mathewsachin.fategrandautomata.scripts.ScriptLog
 import com.mathewsachin.fategrandautomata.scripts.ScriptNotify
 import com.mathewsachin.fategrandautomata.scripts.enums.GameServerEnum
 import com.mathewsachin.fategrandautomata.scripts.enums.MaterialEnum
@@ -10,8 +11,6 @@ import com.mathewsachin.fategrandautomata.scripts.models.BoostItem
 import com.mathewsachin.fategrandautomata.scripts.modules.*
 import com.mathewsachin.fategrandautomata.scripts.prefs.IPreferences
 import com.mathewsachin.libautomata.*
-import timber.log.Timber
-import timber.log.debug
 import javax.inject.Inject
 import kotlin.math.absoluteValue
 import kotlin.time.Duration
@@ -37,26 +36,26 @@ open class AutoBattle @Inject constructor(
     val storageProvider: IStorageProvider
 ) : EntryPoint(exitManager), IFgoAutomataApi by fgAutomataApi {
     sealed class ExitReason {
-        object Abort: ExitReason()
-        class Unexpected(val e: Exception): ExitReason()
-        object CEGet: ExitReason()
-        object CEDropped: ExitReason()
-        object FirstClearRewards: ExitReason()
-        class LimitMaterials(val count: Int): ExitReason()
-        object WithdrawDisabled: ExitReason()
-        object APRanOut: ExitReason()
-        object InventoryFull: ExitReason()
-        class LimitRuns(val count: Int): ExitReason()
-        object SupportSelectionManual: ExitReason()
-        object SupportSelectionFriendNotSet: ExitReason()
-        object SupportSelectionPreferredNotSet: ExitReason()
-        class SkillCommandParseError(val e: Exception): ExitReason()
-        class CardPriorityParseError(val msg: String): ExitReason()
+        object Abort : ExitReason()
+        class Unexpected(val e: Exception) : ExitReason()
+        object CEGet : ExitReason()
+        object CEDropped : ExitReason()
+        object FirstClearRewards : ExitReason()
+        class LimitMaterials(val count: Int) : ExitReason()
+        object WithdrawDisabled : ExitReason()
+        object APRanOut : ExitReason()
+        object InventoryFull : ExitReason()
+        class LimitRuns(val count: Int) : ExitReason()
+        object SupportSelectionManual : ExitReason()
+        object SupportSelectionFriendNotSet : ExitReason()
+        object SupportSelectionPreferredNotSet : ExitReason()
+        class SkillCommandParseError(val e: Exception) : ExitReason()
+        class CardPriorityParseError(val msg: String) : ExitReason()
     }
 
-    internal class BattleExitException(val reason: ExitReason): Exception()
+    internal class BattleExitException(val reason: ExitReason) : Exception()
 
-    class ExitException(val reason: ExitReason, val state: ExitState): Exception()
+    class ExitException(val reason: ExitReason, val state: ExitState) : Exception()
 
     private val support = Support(fgAutomataApi)
     private val card = Card(fgAutomataApi)
@@ -383,11 +382,11 @@ open class AutoBattle @Inject constructor(
         // Pressing Continue option after completing a quest, resetting the state as would occur in "Menu" function
         battle.resetState()
 
-        val region = game.continueRegion.find(images[Images.Repeat])?.Region
+        val continueButtonRegion = game.continueRegion.find(images[Images.Repeat])?.region
             ?: return
 
         // If Boost items are usable, Continue button shifts to the right
-        val useBoost = if (region.X > 1630) {
+        val useBoost = if (continueButtonRegion.x > game.scriptArea.center.x + 350) {
             val boost = BoostItem.of(prefs.boostItemSelectionMode)
 
             boost is BoostItem.Enabled && boost != BoostItem.Enabled.Skip
@@ -396,7 +395,7 @@ open class AutoBattle @Inject constructor(
         if (useBoost) {
             game.continueBoostClick.click()
             useBoostItem()
-        } else game.continueClick.click()
+        } else continueButtonRegion.click()
 
         showRefillsAndRunsMessage()
 
@@ -468,7 +467,7 @@ open class AutoBattle @Inject constructor(
         val withdrawRegion = game.withdrawRegion.find(images[Images.Withdraw])
             ?: return
 
-        withdrawRegion.Region.click()
+        withdrawRegion.region.click()
 
         Duration.seconds(0.5).wait()
 
@@ -542,11 +541,13 @@ open class AutoBattle @Inject constructor(
                 ?.let { match ->
                     // Find party with min distance from center of matched region
                     game.partySelectionArray.withIndex().minByOrNull {
-                        (it.value.X - match.Region.center.X).absoluteValue
+                        (it.value.x - match.region.center.x).absoluteValue
                     }?.index
                 }
 
-            Timber.debug { "Current Party: $currentParty" }
+            messages.log(
+                ScriptLog.CurrentParty(currentParty)
+            )
 
             /* If the currently selected party cannot be detected, we need to switch to a party
                which was not configured. The reason is that the "Start Quest" button becomes
