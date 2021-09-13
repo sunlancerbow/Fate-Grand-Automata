@@ -5,6 +5,7 @@ import android.os.Build
 import android.util.DisplayMetrics
 import android.view.Surface
 import android.view.WindowManager
+import android.widget.Toast
 import com.mathewsachin.fategrandautomata.scripts.prefs.IPreferences
 import com.mathewsachin.fategrandautomata.scripts.prefs.isNewUI
 import com.mathewsachin.libautomata.Region
@@ -30,6 +31,7 @@ class CutoutManager @Inject constructor(
     private var cutoutValue = Cutout.NoCutouts
 
     fun applyCutout(Activity: Activity) {
+        Toast.makeText(Activity, Build.MODEL + " v2.11 ", Toast.LENGTH_LONG).show()
         if (cutoutFound) {
             return
         }
@@ -104,6 +106,9 @@ class CutoutManager @Inject constructor(
         w -= l + r
         h -= t + b
 
+        if (Build.MODEL.equals("XQ-BC52")) {
+            return Region(63, t, 2268, h)
+        }
         return Region(l, t, w, h)
     }
 }
