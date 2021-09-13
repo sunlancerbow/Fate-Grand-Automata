@@ -31,7 +31,7 @@ class CutoutManager @Inject constructor(
     private var cutoutValue = Cutout.NoCutouts
 
     fun applyCutout(Activity: Activity) {
-        Toast.makeText(Activity, Build.MODEL + " v2.11 ", Toast.LENGTH_LONG).show()
+        Toast.makeText(Activity, Build.MODEL + " v2.4b ", Toast.LENGTH_LONG).show()
         if (cutoutFound) {
             return
         }
@@ -107,7 +107,8 @@ class CutoutManager @Inject constructor(
         h -= t + b
 
         if (Build.MODEL.equals("XQ-BC52")) {
-            return Region(63, t, 2268, h)
+//            if (display.rotation == Surface.ROTATION_270) return Region(99, t, 2560, h)
+            return Region(63, t, 2318, h)
         }
         return Region(l, t, w, h)
     }
