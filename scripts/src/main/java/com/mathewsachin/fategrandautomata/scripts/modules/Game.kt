@@ -300,7 +300,9 @@ class Game @Inject constructor(
             .yFromBottom()
 
     var spamClick =
-    Location(-1, -20)
+        (if (isWide)
+            Location(-100, -160)
+        else Location(-1, -90))
     .xFromRight()
     .yFromBottom()
 

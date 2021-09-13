@@ -31,7 +31,7 @@ class CutoutManager @Inject constructor(
     private var cutoutValue = Cutout.NoCutouts
 
     fun applyCutout(Activity: Activity) {
-        Toast.makeText(Activity, Build.MODEL + " v2.4b ", Toast.LENGTH_LONG).show()
+        Toast.makeText(Activity, Build.MODEL + " v2.5 ", Toast.LENGTH_LONG).show()
         if (cutoutFound) {
             return
         }
