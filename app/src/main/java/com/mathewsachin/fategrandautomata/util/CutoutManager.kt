@@ -107,8 +107,13 @@ class CutoutManager @Inject constructor(
         h -= t + b
 
         if (Build.MODEL.equals("XQ-BC52")) {
-//            if (display.rotation == Surface.ROTATION_270) return Region(99, t, 2560, h)
-            return Region(63, t, 2318, h)
+            return when(display.rotation) {
+                Surface.ROTATION_90 -> Region(66, t, 2304, h)
+                Surface.ROTATION_270 -> Region(189, t, 2304, h)
+                else -> Region(l, t, w, h)
+            }
+//            if (display.rotation == Surface.ROTATION_270) return Region(189, t, 2304, h)
+//            return Region(66, t, 2304, h)
         }
         return Region(l, t, w, h)
     }
