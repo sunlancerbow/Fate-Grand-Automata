@@ -120,8 +120,8 @@ class Game @Inject constructor(
 
     val supportUpdateClick =
         if (isWide)
-            Location(1870, 260)
-        else Location(1670, 250)
+            Location(2020, 260)
+        else Location(1820, 250)
 
     val supportListTopClick = Location(if (isWide) -218 else -80, 360).xFromRight()
 

@@ -34,6 +34,7 @@ class AutoSkill(fgAutomataApi: IFgoAutomataApi) : IFgoAutomataApi by fgAutomataA
 
             selectSkillTarget(target)
         } else {
+            game.spamClick.click(1)
             // Close the window that opens up if skill is on cool-down
             game.battleExtraInfoWindowCloseClick.click()
         }
@@ -47,8 +48,9 @@ class AutoSkill(fgAutomataApi: IFgoAutomataApi) : IFgoAutomataApi by fgAutomataA
 
     private fun selectSkillTarget(target: ServantTarget) {
         game.locate(target).click()
+        game.spamClick.click(1)
 
-        Duration.seconds(0.5).wait()
+//        Duration.seconds(0.5).wait()
 
         // Exit any extra menu
         game.battleExtraInfoWindowCloseClick.click()
