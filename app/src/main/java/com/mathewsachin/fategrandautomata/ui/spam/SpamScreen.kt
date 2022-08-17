@@ -1,6 +1,5 @@
 package com.mathewsachin.fategrandautomata.ui.spam
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -8,16 +7,15 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.rememberPagerState
 import com.mathewsachin.fategrandautomata.R
 import com.mathewsachin.fategrandautomata.scripts.enums.SpamEnum
 import com.mathewsachin.fategrandautomata.scripts.models.SkillSpamTarget
@@ -26,6 +24,8 @@ import com.mathewsachin.fategrandautomata.ui.HeadingButton
 import com.mathewsachin.fategrandautomata.ui.prefs.MultiSelectChip
 import com.mathewsachin.fategrandautomata.ui.prefs.SwitchPreference
 import com.mathewsachin.fategrandautomata.ui.prefs.listDialog
+import com.mathewsachin.fategrandautomata.util.stringRes
+import kotlinx.coroutines.launch
 
 @Composable
 fun SpamScreen(
@@ -36,6 +36,9 @@ fun SpamScreen(
             vm.save()
         }
     }
+
+    val pagerState = rememberPagerState()
+    val scope = rememberCoroutineScope()
 
     LazyColumn {
         item {
@@ -62,7 +65,7 @@ fun SpamScreen(
                 )
 
                 (1..vm.spamStates.size).map {
-                    val isSelected = vm.selectedServant == it - 1
+                    val isSelected = pagerState.currentPage == it - 1
 
                     Box(
                         modifier = Modifier
@@ -70,7 +73,7 @@ fun SpamScreen(
                                 color = if (isSelected) MaterialTheme.colors.secondary else Color.Transparent,
                                 shape = MaterialTheme.shapes.medium
                             )
-                            .clickable { vm.selectedServant = it - 1 }
+                            .clickable { scope.launch { pagerState.animateScrollToPage(it - 1) } }
                             .padding(14.dp, 5.dp)
                     ) {
                         Text(
@@ -85,13 +88,13 @@ fun SpamScreen(
         }
 
         item {
-            val selectedConfig = vm.spamStates[vm.selectedServant]
-
-            AnimatedContent(
-                targetState = selectedConfig
+            HorizontalPager(
+                state = pagerState,
+                verticalAlignment = Alignment.Top,
+                count = vm.spamStates.size
             ) {
                 SpamView(
-                    selectedConfig = it
+                    selectedConfig = vm.spamStates[it]
                 )
             }
         }
@@ -132,7 +135,7 @@ private fun NpSpamView(
         modifier = Modifier
             .padding(start = 16.dp)
     ) {
-        Text("NP:")
+        Text(stringResource(R.string.spam_np))
 
         var selectedSpamMode by spamConfig.spamMode
         var selectedWaves by spamConfig.waves
@@ -232,13 +235,13 @@ private fun SelectSpamMode(
     val dialog = listDialog(
         selected = selected,
         onSelectedChange = onSelectChange,
-        entries = SpamEnum.values().associateWith { it.toString() },
-        title = "Spam mode"
+        entries = SpamEnum.values().associateWith { stringResource(it.stringRes) },
+        title = stringResource(R.string.spam)
     )
 
     ListItem(
-        text = { Text("Mode") },
-        secondaryText = { Text(selected.toString()) },
+        text = { Text(stringResource(R.string.spam)) },
+        secondaryText = { Text(stringResource(selected.stringRes)) },
         modifier = modifier
             .clickable { dialog.show() }
     )
@@ -254,11 +257,11 @@ private fun SelectTarget(
         selected = selected,
         onSelectedChange = onSelectChange,
         entries = SkillSpamTarget.values().associateWith { it.toString() },
-        title = "Target"
+        title = stringResource(R.string.spam_target)
     )
 
     ListItem(
-        text = { Text("Target") },
+        text = { Text(stringResource(R.string.spam_target)) },
         secondaryText = { Text(selected.toString()) },
         modifier = modifier
             .clickable { dialog.show() }

@@ -2,7 +2,7 @@ package com.mathewsachin.fategrandautomata.scripts.prefs
 
 import com.mathewsachin.fategrandautomata.scripts.enums.GameServerEnum
 import com.mathewsachin.fategrandautomata.scripts.enums.ScriptModeEnum
-import com.mathewsachin.libautomata.IPlatformPrefs
+import com.mathewsachin.libautomata.PlatformPrefs
 import kotlin.time.Duration
 
 interface IPreferences {
@@ -24,7 +24,10 @@ interface IPreferences {
     val recordScreen: Boolean
     val skillDelay: Duration
     val screenshotDrops: Boolean
+    val screenshotDropsUnmodified: Boolean
     var maxGoldEmberSetSize: Int
+    var stopAfterThisRun: Boolean
+    val skipServantFaceCardCheck: Boolean
 
     var shouldLimitFP: Boolean
     var limitFP: Int
@@ -37,7 +40,7 @@ interface IPreferences {
     val waitBeforeCards: Duration
 
     val support: ISupportPreferencesCommon
-    val platformPrefs: IPlatformPrefs
+    val platformPrefs: PlatformPrefs
     val gestures: IGesturesPreferences
 
     var ceBombTargetRarity: Int
@@ -48,5 +51,3 @@ interface IPreferences {
 }
 
 val IPreferences.wantsMediaProjectionToken get() = !useRootForScreenshots
-
-val IPreferences.isNewUI get() = gameServer == GameServerEnum.Jp || gameServer == GameServerEnum.Kr

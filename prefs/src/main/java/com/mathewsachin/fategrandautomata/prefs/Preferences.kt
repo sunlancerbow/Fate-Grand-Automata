@@ -4,9 +4,9 @@ import com.mathewsachin.fategrandautomata.prefs.core.PrefsCore
 import com.mathewsachin.fategrandautomata.prefs.core.map
 import com.mathewsachin.fategrandautomata.scripts.enums.GameServerEnum
 import com.mathewsachin.fategrandautomata.scripts.prefs.*
-import com.mathewsachin.libautomata.IPlatformPrefs
+import com.mathewsachin.libautomata.PlatformPrefs
 import javax.inject.Inject
-import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 
 class PreferencesImpl @Inject constructor(
     val prefs: PrefsCore,
@@ -69,21 +69,27 @@ class PreferencesImpl @Inject constructor(
 
     override val recordScreen by prefs.recordScreen
 
-    override val skillDelay by prefs.skillDelay.map { Duration.milliseconds(it) }
+    override val skillDelay by prefs.skillDelay.map { it.milliseconds }
 
     override val screenshotDrops by prefs.screenshotDrops
+
+    override val screenshotDropsUnmodified by prefs.screenshotDropsUnmodified
 
     override val stageCounterSimilarity by prefs.stageCounterSimilarity.map { it / 100.0 }
 
     override val stageCounterNew by prefs.stageCounterNew
 
-    override val waitBeforeTurn by prefs.waitBeforeTurn.map { Duration.milliseconds(it) }
+    override val waitBeforeTurn by prefs.waitBeforeTurn.map { it.milliseconds }
 
-    override val waitBeforeCards by prefs.waitBeforeCards.map { Duration.milliseconds(it) }
+    override val waitBeforeCards by prefs.waitBeforeCards.map { it.milliseconds }
 
     override var maxGoldEmberSetSize by prefs.maxGoldEmberSetSize
 
     override var ceBombTargetRarity by prefs.ceBombTargetRarity
+
+    override var stopAfterThisRun by prefs.stopAfterThisRun
+
+    override var skipServantFaceCardCheck by prefs.skipServantFaceCardCheck
 
     override var shouldLimitFP by prefs.shouldLimitFP
     override var limitFP by prefs.limitFP
@@ -133,7 +139,7 @@ class PreferencesImpl @Inject constructor(
         override val maxUpdates by prefs.supportMaxUpdates
     }
 
-    override val platformPrefs = object : IPlatformPrefs {
+    override val platformPrefs = object : PlatformPrefs {
         override val debugMode by prefs.debugMode
 
         override val minSimilarity by prefs.minSimilarity.map { it / 100.0 }
@@ -148,17 +154,17 @@ class PreferencesImpl @Inject constructor(
     override val gestures = object :
         IGesturesPreferences {
         override val clickWaitTime by prefs.clickWaitTime
-            .map { Duration.milliseconds(it) }
+            .map { it.milliseconds }
 
         override val clickDuration by prefs.clickDuration
-            .map { Duration.milliseconds(it) }
+            .map { it.milliseconds }
 
-        override val clickDelay by prefs.clickDelay.map { Duration.milliseconds(it) }
+        override val clickDelay by prefs.clickDelay.map { it.milliseconds }
 
         override val swipeWaitTime by prefs.swipeWaitTime
-            .map { Duration.milliseconds(it) }
+            .map { it.milliseconds }
 
         override val swipeDuration by prefs.swipeDuration
-            .map { Duration.milliseconds(it) }
+            .map { it.milliseconds }
     }
 }

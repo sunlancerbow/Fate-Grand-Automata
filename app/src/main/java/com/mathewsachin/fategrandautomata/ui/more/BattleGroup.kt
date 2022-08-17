@@ -2,10 +2,7 @@ package com.mathewsachin.fategrandautomata.ui.more
 
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.FastForward
-import androidx.compose.material.icons.filled.OfflineBolt
-import androidx.compose.material.icons.filled.Public
-import androidx.compose.material.icons.filled.RadioButtonChecked
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.mathewsachin.fategrandautomata.R
@@ -14,6 +11,7 @@ import com.mathewsachin.fategrandautomata.scripts.enums.GameServerEnum
 import com.mathewsachin.fategrandautomata.ui.icon
 import com.mathewsachin.fategrandautomata.ui.prefs.SingleSelectChipPreference
 import com.mathewsachin.fategrandautomata.ui.prefs.SwitchPreference
+import com.mathewsachin.fategrandautomata.util.stringRes
 
 fun LazyListScope.battleGroup(
     prefs: PrefsCore
@@ -33,7 +31,7 @@ fun LazyListScope.battleGroup(
             mapOf(PrefsCore.GameServerAutoDetect to stringResource(R.string.p_game_server_auto_detect))
                 .plus(
                     GameServerEnum.values().associate {
-                        it.name to stringResource(it.displayStringRes)
+                        it.name to stringResource(it.stringRes)
                     }
                 )
         )
@@ -84,10 +82,26 @@ fun LazyListScope.battleGroup(
     }
 
     item {
+        prefs.screenshotDropsUnmodified.SwitchPreference(
+            title = stringResource(R.string.p_screenshot_drops_unmodified),
+            summary = stringResource(R.string.p_screenshot_drops_unmodified_summary),
+            icon = icon(R.drawable.ic_screenshot)
+        )
+    }
+
+    item {
         prefs.boostItemSelectionMode.SingleSelectChipPreference(
             title = stringResource(R.string.p_boost_item),
             icon = icon(Icons.Default.OfflineBolt),
             entries = (-1..3).associateWith { it.boostItemString() }
+        )
+    }
+
+    item {
+        prefs.skipServantFaceCardCheck.SwitchPreference(
+            title = stringResource(R.string.p_skip_servant_face_checks),
+            summary = stringResource(R.string.p_skip_servant_face_checks_summary),
+            icon = icon(Icons.Default.NoAccounts)
         )
     }
 }
@@ -98,12 +112,3 @@ private fun Int.boostItemString() = when (this) {
     0 -> stringResource(R.string.p_boost_item_skip)
     else -> toString()
 }
-
-val GameServerEnum.displayStringRes
-    get() = when (this) {
-        GameServerEnum.En -> R.string.game_server_na
-        GameServerEnum.Jp -> R.string.game_server_jp
-        GameServerEnum.Cn -> R.string.game_server_cn
-        GameServerEnum.Tw -> R.string.game_server_tw
-        GameServerEnum.Kr -> R.string.game_server_kr
-    }

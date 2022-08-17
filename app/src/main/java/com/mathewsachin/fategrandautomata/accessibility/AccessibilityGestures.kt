@@ -6,13 +6,12 @@ import android.graphics.Path
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.mathewsachin.fategrandautomata.scripts.prefs.IGesturesPreferences
-import com.mathewsachin.libautomata.IGestureService
+import com.mathewsachin.libautomata.GestureService
 import com.mathewsachin.libautomata.Location
-import com.mathewsachin.libautomata.extensions.IDurationExtensions
+import com.mathewsachin.libautomata.Waiter
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
 import timber.log.Timber
-import timber.log.debug
 import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.math.*
@@ -21,9 +20,9 @@ import kotlin.math.*
  * Class to perform gestures using Android's [AccessibilityService].
  */
 class AccessibilityGestures @Inject constructor(
-    val gesturePrefs: IGesturesPreferences,
-    durationExtensions: IDurationExtensions
-) : IGestureService, IDurationExtensions by durationExtensions {
+    private val gesturePrefs: IGesturesPreferences,
+    private val wait: Waiter
+) : GestureService {
     fun Path.moveTo(location: Location) = apply {
         moveTo(location.x.toFloat(), location.y.toFloat())
     }
@@ -48,7 +47,7 @@ class AccessibilityGestures @Inject constructor(
         )
         performGesture(swipeStroke)
 
-        gesturePrefs.swipeWaitTime.wait()
+        wait(gesturePrefs.swipeWaitTime)
     }
 
     /**
@@ -120,7 +119,7 @@ class AccessibilityGestures @Inject constructor(
     }
 
     override fun swipe(start: Location, end: Location) = runBlocking {
-        Timber.debug { "swipe $start, $end" }
+        Timber.d("swipe $start, $end")
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             swipe8(start, end)
@@ -136,13 +135,13 @@ class AccessibilityGestures @Inject constructor(
             gesturePrefs.clickDuration.inWholeMilliseconds
         )
 
-        Timber.debug { "click $location x$times" }
+        Timber.d("click $location x$times")
 
         repeat(times) {
             performGesture(stroke)
         }
 
-        gesturePrefs.clickWaitTime.wait()
+        wait(gesturePrefs.clickWaitTime)
     }
 
     private suspend fun performGesture(StrokeDesc: GestureDescription.StrokeDescription): Boolean = suspendCancellableCoroutine {

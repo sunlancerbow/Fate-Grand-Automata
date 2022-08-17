@@ -8,9 +8,9 @@ import java.io.DataOutputStream
  * This class can execute shell commands with superuser rights.
  */
 class SuperUser : AutoCloseable {
-    var superUser: Process
-    var outStream: DataOutputStream
-    var inStream: DataInputStream
+    private val superUser: Process
+    private val outStream: DataOutputStream
+    val inStream: DataInputStream
 
     /**
      * Requests superuser rights and checks if the attempt was successful.

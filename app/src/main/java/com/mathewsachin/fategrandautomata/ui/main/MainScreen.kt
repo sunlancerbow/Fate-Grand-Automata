@@ -22,8 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mathewsachin.fategrandautomata.BuildConfig
 import com.mathewsachin.fategrandautomata.R
-import com.mathewsachin.fategrandautomata.accessibility.ScriptRunnerService
 import com.mathewsachin.fategrandautomata.accessibility.TapperService
+import com.mathewsachin.fategrandautomata.runner.ScriptRunnerService
 import com.mathewsachin.fategrandautomata.scripts.prefs.wantsMediaProjectionToken
 import com.mathewsachin.fategrandautomata.ui.*
 import com.mathewsachin.fategrandautomata.ui.prefs.Preference
@@ -34,7 +34,7 @@ fun MainScreen(
     vm: MainScreenViewModel = viewModel(),
     navigate: (MainScreenDestinations) -> Unit
 ) {
-    var dirPicker: ActivityResultLauncher<Uri>? by remember { mutableStateOf(null) }
+    var dirPicker: ActivityResultLauncher<Uri?>? by remember { mutableStateOf(null) }
 
     var toggling by rememberSaveable { mutableStateOf(false) }
 
@@ -161,12 +161,12 @@ private fun toggleOverlayService(
 }
 
 sealed class MainScreenDestinations {
-    object Releases: MainScreenDestinations()
-    object TroubleshootingGuide: MainScreenDestinations()
-    object BattleConfigs: MainScreenDestinations()
-    object MoreOptions: MainScreenDestinations()
-    object AccessibilitySettings: MainScreenDestinations()
-    object OverlaySettings: MainScreenDestinations()
+    object Releases : MainScreenDestinations()
+    object TroubleshootingGuide : MainScreenDestinations()
+    object BattleConfigs : MainScreenDestinations()
+    object MoreOptions : MainScreenDestinations()
+    object AccessibilitySettings : MainScreenDestinations()
+    object OverlaySettings : MainScreenDestinations()
 }
 
 @Composable
@@ -193,7 +193,7 @@ private fun MainScreenContent(
 
                     item {
                         HeadingButton(
-                            text = stringResource(R.string.p_nav_troubleshoot),
+                            text = stringResource(R.string.troubleshoot),
                             onClick = { navigate(MainScreenDestinations.TroubleshootingGuide) }
                         )
                     }
@@ -296,10 +296,10 @@ private fun AccessibilityServiceBlock(
                 .padding(16.dp, 5.dp)
         ) {
             Row {
-                Text("Accessibility Service: ")
+                Text(stringResource(R.string.accessibility_service))
 
                 Text(
-                    if (serviceStarted) "ENABLED" else "DISABLED",
+                    stringResource(if (serviceStarted) R.string.accessibility_enabled else R.string.accessibility_disabled),
                     modifier = Modifier
                         .padding(start = 5.dp),
                     color = colorResource(if (serviceStarted) R.color.colorQuickResist else R.color.colorBusterResist),
@@ -313,7 +313,7 @@ private fun AccessibilityServiceBlock(
                 enabled = !serviceStarted || !overlayServiceStarted
             ) {
                 Text(
-                    if (serviceStarted) "DISABLE" else "ENABLE IN SETTINGS"
+                    stringResource(if (serviceStarted) R.string.accessibility_disable else R.string.accessibility_enable_in_settings)
                 )
             }
         }

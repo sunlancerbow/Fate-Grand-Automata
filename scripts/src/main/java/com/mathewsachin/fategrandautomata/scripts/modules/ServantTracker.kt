@@ -3,49 +3,45 @@ package com.mathewsachin.fategrandautomata.scripts.modules
 import com.mathewsachin.fategrandautomata.scripts.IFgoAutomataApi
 import com.mathewsachin.fategrandautomata.scripts.Images
 import com.mathewsachin.fategrandautomata.scripts.ScriptLog
-import com.mathewsachin.fategrandautomata.scripts.models.CommandCard
-import com.mathewsachin.fategrandautomata.scripts.models.OrderChangeMember
-import com.mathewsachin.fategrandautomata.scripts.models.ServantSlot
-import com.mathewsachin.fategrandautomata.scripts.models.skills
-import com.mathewsachin.libautomata.IPattern
-import kotlin.time.Duration
+import com.mathewsachin.fategrandautomata.scripts.models.*
+import com.mathewsachin.libautomata.Pattern
+import com.mathewsachin.libautomata.dagger.ScriptScope
+import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
-class ServantTracker(
-    fgAutomataApi: IFgoAutomataApi
-) : IFgoAutomataApi by fgAutomataApi, AutoCloseable {
-    sealed class TeamSlot(val position: Int) {
-        object A: TeamSlot(1)
-        object B: TeamSlot(2)
-        object C: TeamSlot(3)
-        object D: TeamSlot(4)
-        object E: TeamSlot(5)
-        object F: TeamSlot(6)
+@ScriptScope
+class ServantTracker @Inject constructor(
+    api: IFgoAutomataApi
+) : IFgoAutomataApi by api, AutoCloseable {
 
-        override fun toString() = "[$position]"
+    private val servantQueue = mutableListOf<TeamSlot>()
+    private val _deployed = mutableMapOf<FieldSlot, TeamSlot>()
+    val deployed: Map<FieldSlot, TeamSlot> = _deployed
 
-        companion object {
-            val list by lazy {
-                listOf(A, B, C, D, E, F)
-            }
-        }
+    fun nextRun() {
+        servantQueue.clear()
+        servantQueue.addAll(
+            listOf(TeamSlot.D, TeamSlot.E, TeamSlot.F)
+        )
+
+        _deployed.clear()
+        _deployed.putAll(
+            mapOf(
+                FieldSlot.A to TeamSlot.A,
+                FieldSlot.B to TeamSlot.B,
+                FieldSlot.C to TeamSlot.C
+            )
+        )
     }
 
-    private val servantQueue = mutableListOf(
-        TeamSlot.D,
-        TeamSlot.E,
-        TeamSlot.F
-    )
-
-    val deployed = mutableMapOf<ServantSlot, TeamSlot?>(
-        ServantSlot.A to TeamSlot.A,
-        ServantSlot.B to TeamSlot.B,
-        ServantSlot.C to TeamSlot.C
-    )
+    init {
+        nextRun()
+    }
 
     class TeamSlotData(
-        val checkImage: IPattern,
-        val skills: List<IPattern>
-    ): AutoCloseable {
+        val checkImage: Pattern,
+        val skills: List<Pattern>
+    ) : AutoCloseable {
         override fun close() {
             checkImage.close()
             skills.forEach { it.close() }
@@ -55,7 +51,7 @@ class ServantTracker(
     val checkImages = mutableMapOf<TeamSlot, TeamSlotData>()
     private var supportSlot: TeamSlot? = null
 
-    val faceCardImages = mutableMapOf<TeamSlot, IPattern>()
+    private val faceCardImages = mutableMapOf<TeamSlot, Pattern>()
 
     override fun close() {
         checkImages.values.forEach { it.close() }
@@ -63,7 +59,7 @@ class ServantTracker(
         checkImages.clear()
     }
 
-    private fun init(teamSlot: TeamSlot, slot: ServantSlot) {
+    private fun init(teamSlot: TeamSlot, slot: FieldSlot) {
         messages.log(
             ScriptLog.ServantEnteredSlot(
                 servant = teamSlot,
@@ -71,86 +67,112 @@ class ServantTracker(
             )
         )
 
-        useSameSnapIn {
-            checkImages[teamSlot] = TeamSlotData(
-                checkImage = game.servantChangeCheckRegion(slot)
-                    .getPattern()
-                    .tag("Servant $teamSlot"),
-                skills = slot.skills().mapIndexed { index, it ->
-                    game.imageRegion(it)
+        val isSupport = images[Images.ServantCheckSupport] in locations.battle.servantChangeSupportCheckRegion(slot)
+
+        if (teamSlot !in checkImages || isSupport) {
+            useSameSnapIn {
+                checkImages[teamSlot] = TeamSlotData(
+                    checkImage = locations.battle.servantChangeCheckRegion(slot)
                         .getPattern()
-                        .tag("Servant $teamSlot S${index + 1}")
-                }
-            )
+                        .tag("Servant $teamSlot"),
+                    skills = slot.skills().mapIndexed { index, it ->
+                        locations.battle.imageRegion(it)
+                            .getPattern()
+                            .tag("Servant $teamSlot S${index + 1}")
+                    }
+                )
+            }
         }
 
-        if (supportSlot == null
-            && images[Images.ServantCheckSupport] in game.servantChangeSupportCheckRegion(slot)) {
+        if (supportSlot == null && isSupport) {
             supportSlot = teamSlot
-        } else {
+        } else if (!isSupport) {
             // Don't useSameSnapIn here, since we open a dialog
             initFaceCard(teamSlot, slot)
         }
     }
 
-    private val trackFaceCards = false
-
-    private fun initFaceCard(teamSlot: TeamSlot, slot: ServantSlot) {
-        if (!trackFaceCards || teamSlot in faceCardImages)
+    private fun initFaceCard(teamSlot: TeamSlot, slot: FieldSlot) {
+        if (prefs.skipServantFaceCardCheck || teamSlot in faceCardImages)
             return
 
         // Open details dialog and click on INFO
-        game.servantOpenDetailsClick(slot).click()
-        game.servantDetailsInfoClick.click()
+        locations.battle.servantOpenDetailsClick(slot).click()
+        locations.battle.servantDetailsInfoClick.click()
 
-        Duration.milliseconds(250).wait()
+        250.milliseconds.wait()
 
-        val image = game.servantDetailsFaceCardRegion.getPattern().tag("Face $teamSlot")
+        val image = locations.battle.servantDetailsFaceCardRegion.getPattern().tag("Face $teamSlot")
 
         // Close dialog
-        game.battleExtraInfoWindowCloseClick.click()
+        locations.battle.extraInfoWindowCloseClick.click()
 
         faceCardImages[teamSlot] = image
+
+        250.milliseconds.wait()
     }
 
-    private fun check(slot: ServantSlot) {
+    private fun check(slot: FieldSlot) {
+        // If a servant is not present, that means none are left in the backline
+        if (images[Images.ServantExist] !in locations.battle.servantPresentRegion(slot)) {
+            _deployed.remove(slot)
+            servantQueue.clear()
+            return
+        }
+
         val teamSlot = deployed[slot] ?: return
+        if (teamSlot is TeamSlot.Unknown) return
 
-        checkImages[teamSlot].let {
-            if (it == null) {
-                init(teamSlot, slot)
-            }
-            else if (
-                it.checkImage !in game.servantChangeCheckRegion(slot)
-                // In case of dual-servant comps, identify between support and our servant with SUPPORT marker.
-                || ((supportSlot == teamSlot) != (images[Images.ServantCheckSupport] in game.servantChangeSupportCheckRegion(slot)))
-            ) {
-                val newTeamSlot = servantQueue.removeFirstOrNull()
-                deployed[slot] = newTeamSlot
+        val checkImage = checkImages[teamSlot]?.checkImage
 
-                if (newTeamSlot != null) {
-                    init(newTeamSlot, slot)
-                }
+        if (checkImage == null) {
+            init(teamSlot, slot)
+            return
+        }
+
+        val isDifferentServant = checkImage !in locations.battle.servantChangeCheckRegion(slot)
+        val isSupport = images[Images.ServantCheckSupport] in locations.battle.servantChangeSupportCheckRegion(slot)
+        val wasSupport = supportSlot == teamSlot
+
+        // New run with different support
+        if (wasSupport && isSupport && isDifferentServant) {
+            init(teamSlot, slot)
+        } else if (isDifferentServant || (wasSupport != isSupport)) {
+            val newTeamSlot = servantQueue.removeFirstOrNull()
+
+            if (newTeamSlot != null) {
+                _deployed[slot] = newTeamSlot
+                init(newTeamSlot, slot)
+            } else {
+                // Something has gone wrong with matching servants, a servant is present but we don't know which one
+                _deployed[slot] = TeamSlot.Unknown
+
+                messages.log(
+                    ScriptLog.ServantEnteredSlot(
+                        servant = TeamSlot.Unknown,
+                        slot = slot
+                    )
+                )
             }
         }
     }
 
     fun beginTurn() =
-        ServantSlot.list.forEach {
+        FieldSlot.list.forEach {
             check(it)
         }
 
     fun orderChanged(starting: OrderChangeMember.Starting, sub: OrderChangeMember.Sub) {
         val startingSlot = when (starting) {
-            OrderChangeMember.Starting.A -> ServantSlot.A
-            OrderChangeMember.Starting.B -> ServantSlot.B
-            OrderChangeMember.Starting.C -> ServantSlot.C
+            OrderChangeMember.Starting.A -> FieldSlot.A
+            OrderChangeMember.Starting.B -> FieldSlot.B
+            OrderChangeMember.Starting.C -> FieldSlot.C
         }
         val subIndex = sub.autoSkillCode - OrderChangeMember.Sub.A.autoSkillCode
 
         if (subIndex in servantQueue.indices) {
             deployed[startingSlot]?.let { swapOut ->
-                deployed[startingSlot] = servantQueue[subIndex]
+                _deployed[startingSlot] = servantQueue[subIndex]
                 servantQueue[subIndex] = swapOut
 
                 check(startingSlot)
@@ -158,52 +180,51 @@ class ServantTracker(
         }
     }
 
-    fun logFaceCardForServants(): Map<TeamSlot, List<CommandCard.Face>> {
-        if (!trackFaceCards)
-            return mapOf()
+    fun faceCardsGroupedByServant(): Map<TeamSlot, Collection<CommandCard.Face>> {
+        if (prefs.skipServantFaceCardCheck) {
+            return emptyMap()
+        }
 
         val cardsRemaining = CommandCard.Face.list.toMutableSet()
-        val result = mutableMapOf<TeamSlot, List<CommandCard.Face>>()
+        val result = mutableMapOf<TeamSlot, Set<CommandCard.Face>>()
 
         supportSlot?.let { supportSlot ->
             if (supportSlot in deployed.values) {
                 val matched = cardsRemaining.filter { card ->
-                    images[Images.Support] in game.supportCheckRegion(card)
-                }
-
-                messages.log(
-                    ScriptLog.CardsBelongToServant(
-                        cards = matched,
-                        servant = supportSlot,
-                        isSupport = true
-                    )
-                )
+                    images[Images.Support] in locations.attack.supportCheckRegion(card)
+                }.toSet()
 
                 cardsRemaining -= matched
-
                 result[supportSlot] = matched
             }
         }
 
-        deployed.forEach { (_, teamSlot) ->
-            if (supportSlot != teamSlot && teamSlot != null) {
-                val img = faceCardImages[teamSlot] ?: return@forEach
-
-                val matched = cardsRemaining.filter { card ->
-                    img in game.servantMatchRegion(card)
-                }
-
-                messages.log(
-                    ScriptLog.CardsBelongToServant(
-                        cards = matched,
-                        servant = teamSlot
-                    )
-                )
-
-                cardsRemaining -= matched
-
-                result[teamSlot] = matched
+        val ownedServants = faceCardImages
+            .filterKeys { it != supportSlot && it in deployed.values }
+        cardsRemaining
+            .groupBy { card ->
+                // find the best matching Servant which isn't the support
+                ownedServants
+                    .mapValues { (_, image) ->
+                        locations.attack.servantMatchRegion(card)
+                            .find(image, 0.5)?.score ?: 0.0
+                    }
+                    .filterValues { it > 0.0 }
+                    .maxByOrNull { it.value }
+                    ?.key
             }
+            .filterKeys { it != null }
+            .entries
+            .associateTo(result) { (key, value) -> key!! to value.toSet() }
+
+        result.forEach { (servant, cards) ->
+            messages.log(
+                ScriptLog.CardsBelongToServant(
+                    cards,
+                    servant,
+                    isSupport = servant == supportSlot
+                )
+            )
         }
 
         return result

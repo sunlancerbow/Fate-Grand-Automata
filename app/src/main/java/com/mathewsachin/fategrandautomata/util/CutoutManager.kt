@@ -2,25 +2,24 @@ package com.mathewsachin.fategrandautomata.util
 
 import android.app.Activity
 import android.os.Build
-import android.util.DisplayMetrics
 import android.view.Surface
-import android.view.WindowManager
-import android.widget.Toast
+import com.mathewsachin.fategrandautomata.prefs.core.GameAreaMode
+import com.mathewsachin.fategrandautomata.prefs.core.PrefsCore
+import com.mathewsachin.fategrandautomata.scripts.enums.GameServerEnum
 import com.mathewsachin.fategrandautomata.scripts.prefs.IPreferences
-import com.mathewsachin.fategrandautomata.scripts.prefs.isNewUI
 import com.mathewsachin.libautomata.Region
+import com.mathewsachin.libautomata.Size
 import timber.log.Timber
-import timber.log.debug
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.math.roundToInt
 
 @Singleton
 class CutoutManager @Inject constructor(
-    windowManager: WindowManager,
-    val prefs: IPreferences
+    private val display: DisplayHelper,
+    private val prefs: IPreferences,
+    private val prefsCore: PrefsCore,
 ) {
-    private val display = windowManager.defaultDisplay
-
     private data class Cutout(val L: Int = 0, val T: Int = 0, val R: Int = 0, val B: Int = 0) {
         companion object {
             val NoCutouts = Cutout()
@@ -30,8 +29,7 @@ class CutoutManager @Inject constructor(
     private var cutoutFound = false
     private var cutoutValue = Cutout.NoCutouts
 
-    fun applyCutout(Activity: Activity) {
-        Toast.makeText(Activity, Build.MODEL + " v2.5 ", Toast.LENGTH_LONG).show()
+    fun applyCutout(activity: Activity) {
         if (cutoutFound) {
             return
         }
@@ -42,7 +40,7 @@ class CutoutManager @Inject constructor(
             return
         }
 
-        val displayCutout = Activity.window.decorView.rootWindowInsets.displayCutout
+        val displayCutout = activity.window.decorView.rootWindowInsets.displayCutout
         if (displayCutout == null) {
             cutoutFound = true
             return
@@ -70,13 +68,17 @@ class CutoutManager @Inject constructor(
         }
 
         cutoutFound = true
-        Timber.debug { "Detected display cutout: $cutoutValue" }
+        Timber.d("Detected display cutout: $cutoutValue")
     }
 
     private fun shouldIgnoreNotch() =
-        prefs.isNewUI || prefs.ignoreNotchCalculation
+        when (prefs.gameServer) {
+            // TW may or may not cover notch area
+            GameServerEnum.Tw -> prefs.ignoreNotchCalculation
+            else -> true
+        }
 
-    private fun getCutout(Rotation: Int): Cutout {
+    private fun getCutout(rotation: Int): Cutout {
         if (shouldIgnoreNotch() || cutoutValue == Cutout.NoCutouts) {
             return Cutout.NoCutouts
         }
@@ -84,7 +86,7 @@ class CutoutManager @Inject constructor(
         val (l, t, r, b) = cutoutValue
 
         // Consider current orientation of screen
-        return when (Rotation) {
+        return when (rotation) {
             Surface.ROTATION_90 -> Cutout(t, r, b, l)
             Surface.ROTATION_180 -> Cutout(r, b, l, t)
             Surface.ROTATION_270 -> Cutout(b, l, t, r)
@@ -92,29 +94,41 @@ class CutoutManager @Inject constructor(
         }
     }
 
+    private fun getScreenSize(): Size {
+        val metrics = display.metrics
+
+        return Size(metrics.widthPixels, metrics.heightPixels)
+    }
+
     fun getCutoutAppliedRegion(): Region {
-        val metrics = DisplayMetrics()
-        display.getRealMetrics(metrics)
+        val (w, h) = getScreenSize()
 
-        var w = metrics.widthPixels
-        var h = metrics.heightPixels
+        return when (prefsCore.gameAreaMode.get()) {
+            GameAreaMode.Default -> {
+                val cutout = getCutout(display.rotation)
+                val (l, t, r, b) = cutout
 
-        val cutout = getCutout(display.rotation)
-        val (l, t, r, b) = cutout
-
-        // remove notch from dimensions
-        w -= l + r
-        h -= t + b
-
-        if (Build.MODEL.equals("XQ-BC52")) {
-            return when(display.rotation) {
-                Surface.ROTATION_90 -> Region(66, t, 2304, h)
-                Surface.ROTATION_270 -> Region(189, t, 2304, h)
-                else -> Region(l, t, w, h)
+                // remove notch from dimensions
+                Region(l, t, w - l - r, h - t - b)
             }
-//            if (display.rotation == Surface.ROTATION_270) return Region(189, t, 2304, h)
-//            return Region(66, t, 2304, h)
+            GameAreaMode.Xperia -> {
+                val fgoRatio = 0.9
+                val barRatio = 0.026
+                val navRatio = 1 - (fgoRatio + barRatio)
+
+                val leftRatio = if (display.rotation == Surface.ROTATION_270) navRatio else barRatio
+
+                Region((w * leftRatio).roundToInt(), 0, (w * fgoRatio).roundToInt(), h)
+            }
+            GameAreaMode.Duo -> Region(192, 0, 2400, h)
+            GameAreaMode.Custom -> {
+                val l = prefsCore.gameOffsetLeft.get()
+                val t = prefsCore.gameOffsetTop.get()
+                val r = prefsCore.gameOffsetRight.get()
+                val b = prefsCore.gameOffsetBottom.get()
+
+                Region(l, t, w - l - r, h - t - b)
+            }
         }
-        return Region(l, t, w, h)
     }
 }

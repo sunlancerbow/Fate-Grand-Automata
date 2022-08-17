@@ -73,8 +73,7 @@
     <string name="support_img_namer_ce">概念礼装</string>
     <string name="support_img_namer_friend_names">好友名称</string>
     <string name="support_img_namer_item_name">名称</string>
-    <string name="support_img_namer_servant_invalid_message">文件名称不可以句号或空格开头、不可使用特殊字符: %s</string>
-    <string name="support_img_namer_ce_or_friend_invalid_message">文件名称不可以句号或空格开头、不可使用特殊字符: %s</string>
+    <string name="support_img_namer_invalid_message">文件名称不可以句号或空格开头、不可使用特殊字符: %s</string>
     <string name="support_img_namer_title">请选择</string>
     <string name="support_img_namer_done">完成</string>
     <string name="support_img_namer_blank_file_name">名称不可为空白，请取消勾选或是加上名称</string>
@@ -114,6 +113,8 @@
     <string name="p_stop_on_ce_get_summary">首次通关及羁绊礼装获得时自动停止脚本</string>
     <string name="p_screenshot_drops">掉落截图</string>
     <string name="p_screenshot_drops_summary">存至 \'drops\' 文件夹</string>
+    <string name="p_screenshot_drops_unmodified">Save unmodified screenshots</string>
+    <string name="p_screenshot_drops_unmodified_summary">Save unmodified full-screen screenshots instead of cropped and rescaled screenshots</string>
     <string name="p_boost_item">加速道具</string>
     <string name="p_brave_chains">追击连携</string>
     <string name="p_rearrange_cards">调换顺序\n(优先性高的卡后出)</string>
@@ -162,13 +163,14 @@
     <string name="p_fine_tune_wait_before_cards">选择指令卡前等待时间 (ms)</string>
     <string name="p_fine_tune_wait_multiplier">等待时间加乘 (%)</string>
 
-    <string name="p_nav_troubleshoot">FGA有问题请先点这 (GitHub链接)</string>
-    <string name="p_nav_battle_config_edit">编辑脚本</string>
-    <string name="p_nav_card_priority">偏好指令卡</string>
+    <string name="troubleshoot">FGA有问题请先点这 (GitHub链接)</string>
+    <string name="battle_config_edit">编辑脚本</string>
+    <string name="card_priority">偏好指令卡</string>
 
     <string name="p_refill_type_gold">黃金果实</string>
     <string name="p_refill_type_silver">白银果实</string>
-    <string name="p_refill_type_bronze">赤铜果实</string>
+    <string name="p_refill_type_bronze">青铜果实</string>
+    <string name="p_refill_type_copper">赤铜果实</string>
     <string name="p_refill_type_sq">圣晶石</string>
 
     <string name="p_brave_chains_don_t_care">无偏好</string>

@@ -1,15 +1,13 @@
 package com.mathewsachin.fategrandautomata.ui.support_img_namer
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ScrollView
 import com.mathewsachin.fategrandautomata.R
 import com.mathewsachin.fategrandautomata.SupportImageKind
-import com.mathewsachin.fategrandautomata.accessibility.ScriptRunnerUserInterface
-import com.mathewsachin.fategrandautomata.scripts.entrypoints.getCeImgPath
-import com.mathewsachin.fategrandautomata.scripts.entrypoints.getFriendImgPath
-import com.mathewsachin.fategrandautomata.scripts.entrypoints.getServantImgPath
+import com.mathewsachin.fategrandautomata.scripts.entrypoints.SupportImageMaker
 import com.mathewsachin.fategrandautomata.util.StorageProvider
 import com.mathewsachin.fategrandautomata.util.dayNightThemed
 import com.mathewsachin.fategrandautomata.util.showOverlayDialog
@@ -18,87 +16,67 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.resume
 
-// *, ?, \, |, / are special characters in Regex and need to be escaped using \
-private const val InvalidChars = """<>"\|:\*\?\\\/"""
-private const val FileNameRegex = """[^\.\s$InvalidChars][^$InvalidChars]*"""
-
-val ServantRegex = Regex("""$FileNameRegex(/$FileNameRegex)?""")
-val CeRegex = Regex(FileNameRegex)
-
-private const val InvalidCharsMsg = "<, >, \", |, :, *, ?, \\, /"
-
 private fun getSupportEntries(
-    Frame: View,
+    frame: View,
     storageProvider: StorageProvider
 ): List<SupportImgEntry> {
     val tempDir = storageProvider.supportImageTempDir
 
-    val context = Frame.context
-    val servantInvalidMsg = context.getString(R.string.support_img_namer_servant_invalid_message, InvalidCharsMsg)
-    val ceOrFriendInvalidMsg = context.getString(R.string.support_img_namer_ce_or_friend_invalid_message, InvalidCharsMsg)
-
     val servant0 = SupportImgEntry(
-        getServantImgPath(
+        SupportImageMaker.getServantImgPath(
             tempDir,
             0
         ),
         SupportImageKind.Servant,
-        Frame.findViewById(R.id.support_img_servant_0),
-        ServantRegex, servantInvalidMsg
+        frame.findViewById(R.id.support_img_servant_0)
     )
     val servant1 = SupportImgEntry(
-        getServantImgPath(
+        SupportImageMaker.getServantImgPath(
             tempDir,
             1
         ),
         SupportImageKind.Servant,
-        Frame.findViewById(R.id.support_img_servant_1),
-        ServantRegex, servantInvalidMsg
+        frame.findViewById(R.id.support_img_servant_1)
     )
 
     val ce0 = SupportImgEntry(
-        getCeImgPath(
+        SupportImageMaker.getCeImgPath(
             tempDir,
             0
         ),
         SupportImageKind.CE,
-        Frame.findViewById(R.id.support_img_ce_0),
-        CeRegex, ceOrFriendInvalidMsg
+        frame.findViewById(R.id.support_img_ce_0)
     )
     val ce1 = SupportImgEntry(
-        getCeImgPath(
+        SupportImageMaker.getCeImgPath(
             tempDir,
             1
         ),
         SupportImageKind.CE,
-        Frame.findViewById(R.id.support_img_ce_1),
-        CeRegex, ceOrFriendInvalidMsg
+        frame.findViewById(R.id.support_img_ce_1)
     )
 
     val friend0 = SupportImgEntry(
-        getFriendImgPath(
+        SupportImageMaker.getFriendImgPath(
             tempDir,
             0
         ),
         SupportImageKind.Friend,
-        Frame.findViewById(R.id.support_img_friend_0),
-        CeRegex, ceOrFriendInvalidMsg
+        frame.findViewById(R.id.support_img_friend_0)
     )
     val friend1 = SupportImgEntry(
-        getFriendImgPath(
+        SupportImageMaker.getFriendImgPath(
             tempDir,
             1
         ),
         SupportImageKind.Friend,
-        Frame.findViewById(R.id.support_img_friend_1),
-        CeRegex, ceOrFriendInvalidMsg
+        frame.findViewById(R.id.support_img_friend_1)
     )
 
     return listOf(servant0, servant1, ce0, ce1, friend0, friend1)
 }
 
-suspend fun showSupportImageNamer(UI: ScriptRunnerUserInterface, storageProvider: StorageProvider) = withContext(Dispatchers.Main) {
-    val context = UI.Service.applicationContext
+suspend fun showSupportImageNamer(context: Context, storageProvider: StorageProvider) = withContext(Dispatchers.Main) {
     val themedContext = context.dayNightThemed()
     val frame = FrameLayout(themedContext)
 
@@ -115,9 +93,9 @@ suspend fun showSupportImageNamer(UI: ScriptRunnerUserInterface, storageProvider
     suspendCancellableCoroutine<Unit> { coroutine ->
         showOverlayDialog(context) {
             setCancelable(false)
-                .setTitle(UI.Service.getString(R.string.support_img_namer_title))
+                .setTitle(context.getString(R.string.support_img_namer_title))
                 .setView(content)
-                .setPositiveButton(UI.Service.getString(R.string.support_img_namer_done)) { dialog, _ ->
+                .setPositiveButton(context.getString(R.string.support_img_namer_done)) { dialog, _ ->
                     if (entryList.all { it.isValid() }) {
                         if (entryList.all { it.rename(storageProvider) }) {
                             dialog.dismiss()

@@ -1,14 +1,14 @@
 package com.mathewsachin.fategrandautomata.scripts
 
-import com.mathewsachin.fategrandautomata.scripts.modules.Game
+import com.mathewsachin.fategrandautomata.scripts.locations.Locations
 import com.mathewsachin.fategrandautomata.scripts.prefs.IPreferences
-import com.mathewsachin.libautomata.extensions.IAutomataExtensions
+import com.mathewsachin.libautomata.AutomataApi
 import javax.inject.Inject
 
 class FgoAutomataApi @Inject constructor(
-    automataApi: IAutomataExtensions,
+    automataApi: AutomataApi,
     override val prefs: IPreferences,
     override val images: IImageLoader,
-    override val game: Game,
+    override val locations: Locations,
     override val messages: IScriptMessages
-) : IFgoAutomataApi, IAutomataExtensions by automataApi
+) : IFgoAutomataApi, AutomataApi by automataApi
