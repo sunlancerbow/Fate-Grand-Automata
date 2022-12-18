@@ -7,11 +7,16 @@ enum class GameServerEnum constructor(vararg val packageNames: String) {
     Tw("com.komoe.fgomycard", "com.xiaomeng.fategrandorder"),
     Kr("com.netmarble.fgok");
 
+    var betterFgo = false
+        private set
+
     companion object {
         /**
          * Maps an APK package name to the corresponding [GameServerEnum].
          */
         fun fromPackageName(packageName: String): GameServerEnum? =
-            values().find { packageName in it.packageNames }
+            values()
+                .find { packageName in it.packageNames }
+                ?.apply { betterFgo = packageName.startsWith("io.rayshift") }
     }
 }
