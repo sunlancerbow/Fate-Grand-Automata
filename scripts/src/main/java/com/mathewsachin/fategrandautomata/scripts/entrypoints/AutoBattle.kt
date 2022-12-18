@@ -175,11 +175,11 @@ class AutoBattle @Inject constructor(
             { isInQuestRewardScreen() } to { questReward() },
             { isInSupport() } to { support() },
             { isRepeatScreen() } to { repeatQuest() },
-            { withdraw.needsToWithdraw() } to { withdraw.withdraw() },
-            { needsToStorySkip() } to { skipStory() },
-            { isFriendRequestScreen() } to { skipFriendRequestScreen() },
-            { isBond10CEReward() } to { bond10CEReward() },
-            { isCeRewardDetails() } to { ceRewardDetails() },
+//            { withdraw.needsToWithdraw() } to { withdraw.withdraw() },
+//            { needsToStorySkip() } to { skipStory() },
+//            { isFriendRequestScreen() } to { skipFriendRequestScreen() },
+//            { isBond10CEReward() } to { bond10CEReward() },
+//            { isCeRewardDetails() } to { ceRewardDetails() },
             { isDeathAnimation() } to { locations.battle.extraInfoWindowCloseClick.click() }
 
         )
@@ -194,8 +194,11 @@ class AutoBattle @Inject constructor(
                     .firstOrNull()
             }
 
-            actor?.invoke()
-
+            if (actor == null) {
+                locations.battle.spamClick.click(6)
+            } else {
+                actor?.invoke()
+            }
             1.seconds.wait()
         }
     }

@@ -81,6 +81,7 @@ class BattleScreenLocations @Inject constructor(
     val skillOkClick = Location(400, 850).xFromCenter()
     val orderChangeOkClick = Location(0, 1260).xFromCenter()
     val extraInfoWindowCloseClick = Location(-50, 50).xFromRight()
+    val spamClick = Location(-1, -1).xFromRight().yFromBottom()
 
     fun servantOpenDetailsClick(slot: FieldSlot) =
         Location(locate(slot.skill2()).x, 810)
