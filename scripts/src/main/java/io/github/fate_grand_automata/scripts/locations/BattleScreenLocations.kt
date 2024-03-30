@@ -1,15 +1,9 @@
-package io.github.fate_grand_automata.scripts.locations
+package com.mathewsachin.fategrandautomata.scripts.locations
 
-import io.github.fate_grand_automata.scripts.models.EnemyTarget
-import io.github.fate_grand_automata.scripts.models.FieldSlot
-import io.github.fate_grand_automata.scripts.models.OrderChangeMember
-import io.github.fate_grand_automata.scripts.models.ServantTarget
-import io.github.fate_grand_automata.scripts.models.Skill
-import io.github.fate_grand_automata.scripts.models.skill2
-import io.github.fate_grand_automata.scripts.models.skill3
-import io.github.lib_automata.Location
-import io.github.lib_automata.Region
-import io.github.lib_automata.dagger.ScriptScope
+import com.mathewsachin.fategrandautomata.scripts.models.*
+import com.mathewsachin.libautomata.Location
+import com.mathewsachin.libautomata.Region
+import com.mathewsachin.libautomata.dagger.ScriptScope
 import javax.inject.Inject
 
 @ScriptScope
@@ -32,10 +26,7 @@ class BattleScreenLocations @Inject constructor(
         ServantTarget.C -> 660
         ServantTarget.Left -> -290
         ServantTarget.Right -> 330
-        ServantTarget.Option1 -> 0
-        ServantTarget.Option2 -> 470
-        ServantTarget.Melusine -> null
-    }?.let { x -> Location(x, 880) }?.xFromCenter()
+    }.let { x -> Location(x, 880) }.xFromCenter()
 
     fun locate(skill: Skill.Servant) = when (skill) {
         Skill.Servant.A1 -> 148
@@ -89,8 +80,8 @@ class BattleScreenLocations @Inject constructor(
 
     val skillOkClick = Location(400, 850).xFromCenter()
     val orderChangeOkClick = Location(0, 1260).xFromCenter()
-    val extraInfoWindowCloseClick = Location(-300, 940).xFromRight()
-    val skillUseRegion = Region(-210, 320, 420, 85).xFromCenter()
+    val extraInfoWindowCloseClick = Location(-50, 50).xFromRight()
+    val spamClick = Location(-1, -1).xFromRight().yFromBottom()
 
     fun servantOpenDetailsClick(slot: FieldSlot) =
         Location(locate(slot.skill2()).x, 810)
@@ -110,10 +101,8 @@ class BattleScreenLocations @Inject constructor(
         }
 
     fun imageRegion(skill: Skill.Servant) =
-        Region(22, 28, 30, 30) + locate(skill)
+        Region(30, 30, 30, 30) + locate(skill)
 
     val servantDetailsInfoClick = Location(-660, 110).xFromCenter()
     val servantDetailsFaceCardRegion = Region(-685, 330, 110, 60).xFromCenter()
-
-    val battleSafeMiddleOfScreenClick = Location(0, 550).xFromCenter()
 }

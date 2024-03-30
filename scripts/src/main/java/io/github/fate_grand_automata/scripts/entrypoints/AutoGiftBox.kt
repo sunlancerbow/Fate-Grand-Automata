@@ -29,7 +29,7 @@ class AutoGiftBox @Inject constructor(
 
     companion object {
         const val maxClickCount = 99
-        const val maxNullStreak = 3
+        const val maxNullStreak = 4
     }
 
     private data class IterationResult(

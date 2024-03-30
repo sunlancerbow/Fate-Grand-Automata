@@ -1,28 +1,19 @@
-package io.github.fate_grand_automata.scripts.entrypoints
+package com.mathewsachin.fategrandautomata.scripts.entrypoints
 
-import io.github.fate_grand_automata.scripts.IFgoAutomataApi
-import io.github.fate_grand_automata.scripts.Images
-import io.github.fate_grand_automata.scripts.ScriptNotify
-import io.github.fate_grand_automata.scripts.enums.GameServer
-import io.github.fate_grand_automata.scripts.enums.MaterialEnum
-import io.github.fate_grand_automata.scripts.models.BoostItem
-import io.github.fate_grand_automata.scripts.models.FieldSlot
-import io.github.fate_grand_automata.scripts.models.battle.BattleState
-import io.github.fate_grand_automata.scripts.modules.Battle
-import io.github.fate_grand_automata.scripts.modules.CEDropsTracker
-import io.github.fate_grand_automata.scripts.modules.ConnectionRetry
-import io.github.fate_grand_automata.scripts.modules.MaterialsTracker
-import io.github.fate_grand_automata.scripts.modules.PartySelection
-import io.github.fate_grand_automata.scripts.modules.Refill
-import io.github.fate_grand_automata.scripts.modules.ScreenshotDrops
-import io.github.fate_grand_automata.scripts.modules.Support
-import io.github.fate_grand_automata.scripts.modules.Withdraw
-import io.github.fate_grand_automata.scripts.prefs.IPreferences
-import io.github.lib_automata.EntryPoint
-import io.github.lib_automata.ExitManager
-import io.github.lib_automata.Match
-import io.github.lib_automata.ScriptAbortException
-import io.github.lib_automata.dagger.ScriptScope
+import com.mathewsachin.fategrandautomata.scripts.IFgoAutomataApi
+import com.mathewsachin.fategrandautomata.scripts.Images
+import com.mathewsachin.fategrandautomata.scripts.ScriptNotify
+import com.mathewsachin.fategrandautomata.scripts.enums.GameServerEnum
+import com.mathewsachin.fategrandautomata.scripts.enums.MaterialEnum
+import com.mathewsachin.fategrandautomata.scripts.models.BoostItem
+import com.mathewsachin.fategrandautomata.scripts.models.FieldSlot
+import com.mathewsachin.fategrandautomata.scripts.models.battle.BattleState
+import com.mathewsachin.fategrandautomata.scripts.modules.*
+import com.mathewsachin.fategrandautomata.scripts.prefs.IPreferences
+import com.mathewsachin.libautomata.EntryPoint
+import com.mathewsachin.libautomata.ExitManager
+import com.mathewsachin.libautomata.ScriptAbortException
+import com.mathewsachin.libautomata.dagger.ScriptScope
 import javax.inject.Inject
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
@@ -36,7 +27,7 @@ fun IFgoAutomataApi.isInSupport(): Boolean {
 
 fun IFgoAutomataApi.isInventoryFull() =
     // We only have images for JP, NA and KR
-    (prefs.gameServer is GameServer.En || prefs.gameServer is GameServer.Jp || prefs.gameServer is GameServer.Kr)
+    prefs.gameServer in listOf(GameServerEnum.En, GameServerEnum.Jp, GameServerEnum.Kr)
             && images[Images.InventoryFull] in locations.inventoryFullRegion
 
 /**
@@ -57,40 +48,37 @@ class AutoBattle @Inject constructor(
     private val matTracker: MaterialsTracker,
     private val ceDropsTracker: CEDropsTracker
 ) : EntryPoint(exitManager), IFgoAutomataApi by api {
-    sealed class ExitReason(val cause: Exception? = null) {
+    sealed class ExitReason {
         object Abort : ExitReason()
-        class Unexpected(cause: Exception) : ExitReason(cause)
+        class Unexpected(val e: Exception) : ExitReason()
         object CEGet : ExitReason()
         class LimitCEs(val count: Int) : ExitReason()
         object FirstClearRewards : ExitReason()
         class LimitMaterials(val count: Int) : ExitReason()
         object WithdrawDisabled : ExitReason()
         object APRanOut : ExitReason()
-        object StormPodRanOut : ExitReason()
         object InventoryFull : ExitReason()
         class LimitRuns(val count: Int) : ExitReason()
         object SupportSelectionManual : ExitReason()
+        object SupportSelectionFriendNotSet : ExitReason()
         object SupportSelectionPreferredNotSet : ExitReason()
-        class SkillCommandParseError(cause: Exception) : ExitReason(cause)
+        class SkillCommandParseError(val e: Exception) : ExitReason()
         class CardPriorityParseError(val msg: String) : ExitReason()
         object Paused : ExitReason()
         object StopAfterThisRun : ExitReason()
     }
 
-    internal class BattleExitException(val reason: ExitReason) : Exception(reason.cause)
+    internal class BattleExitException(val reason: ExitReason) : Exception()
 
-    class ExitException(val reason: ExitReason, val state: ExitState) : Exception(reason.cause)
+    class ExitException(val reason: ExitReason, val state: ExitState) : Exception()
 
     private var isContinuing = false
 
     // for tracking whether the story skip button could be visible in the current screen
     private var storySkipPossible = true
 
-    // for tracking whether to check for servant death and wave transition animations
-    private var isInBattle = false
-
-
-    private var canScreenshotBondCE = false
+    // for tracking whether to check for servant deaths or not
+    private var servantDeathPossible = false
 
     override fun script(): Nothing {
         try {
@@ -108,16 +96,16 @@ class AutoBattle @Inject constructor(
             matTracker.autoDecrement()
             ceDropsTracker.autoDecrement()
 
-            val perServerConfigPref = prefs.selectedServerConfigPref
+            val refill = prefs.refill
 
             // Auto-decrement runs
-            if (perServerConfigPref.shouldLimitRuns) {
-                perServerConfigPref.limitRuns -= state.runs
+            if (refill.shouldLimitRuns) {
+                refill.limitRuns -= state.runs
 
                 // Turn off run limit when done
-                if (perServerConfigPref.limitRuns <= 0) {
-                    perServerConfigPref.limitRuns = 1
-                    perServerConfigPref.shouldLimitRuns = false
+                if (refill.limitRuns <= 0) {
+                    refill.limitRuns = 1
+                    refill.shouldLimitRuns = false
                 }
             }
         }
@@ -150,15 +138,15 @@ class AutoBattle @Inject constructor(
         val averageTimePerRun: Duration,
         val minTurnsPerRun: Int,
         val maxTurnsPerRun: Int,
-        val averageTurnsPerRun: Double
+        val averageTurnsPerRun: Int
     )
 
     private fun makeExitState(): ExitState {
         return ExitState(
             timesRan = state.runs,
-            runLimit = if (prefs.selectedServerConfigPref.shouldLimitRuns) prefs.selectedServerConfigPref.limitRuns else null,
+            runLimit = if (prefs.refill.shouldLimitRuns) prefs.refill.limitRuns else null,
             timesRefilled = refill.timesRefilled,
-            refillLimit = prefs.selectedServerConfigPref.currentAppleCount,
+            refillLimit = prefs.refill.repetitions,
             ceDropCount = ceDropsTracker.count,
             materials = matTracker.farmed,
             withdrawCount = withdraw.count,
@@ -177,27 +165,23 @@ class AutoBattle @Inject constructor(
             { connectionRetry.needsToRetry() } to { connectionRetry.retry() },
             { battle.isIdle() } to {
                 storySkipPossible = false
-                isInBattle = true
                 battle.performBattle()
+                servantDeathPossible = true
             },
             { isInMenu() } to { menu() },
             { isStartingNp() } to { skipNp() },
-            { isInBondScreen() } to { handleBondScreen() },
             { isInResult() } to { result() },
             { isInDropsScreen() } to { dropScreen() },
-            { isInOrdealCallOutOfPodsScreen() } to { ordealCallOutOfPods() },
-            { isInInterludeEndScreen() } to { locations.interludeCloseClick.click() },
             { isInQuestRewardScreen() } to { questReward() },
             { isInSupport() } to { support() },
             { isRepeatScreen() } to { repeatQuest() },
-            { withdraw.needsToWithdraw() } to { withdraw.withdraw() },
-            { needsToStorySkip() } to { skipStory() },
-            { isFriendRequestScreen() } to { skipFriendRequestScreen() },
-            { isBond10CEReward() } to { bond10CEReward() },
-            { isCeRewardDetails() } to { ceRewardDetails() },
-            { isDeathAnimation() } to { locations.battle.battleSafeMiddleOfScreenClick.click() },
-            { isRankUp() } to { locations.middleOfScreenClick.click() },
-            { isBetweenWaves() } to { locations.battle.battleSafeMiddleOfScreenClick.click() },
+//            { withdraw.needsToWithdraw() } to { withdraw.withdraw() },
+//            { needsToStorySkip() } to { skipStory() },
+//            { isFriendRequestScreen() } to { skipFriendRequestScreen() },
+//            { isBond10CEReward() } to { bond10CEReward() },
+//            { isCeRewardDetails() } to { ceRewardDetails() },
+            { isDeathAnimation() } to { locations.battle.extraInfoWindowCloseClick.click() }
+
         )
 
         // Loop through SCREENS until a Validator returns true
@@ -210,9 +194,12 @@ class AutoBattle @Inject constructor(
                     .firstOrNull()
             }
 
-            actor?.invoke()
-
-            0.5.seconds.wait()
+            if (actor == null) {
+                locations.battle.spamClick.click(6)
+            } else {
+                actor?.invoke()
+            }
+            1.seconds.wait()
         }
     }
 
@@ -252,25 +239,12 @@ class AutoBattle @Inject constructor(
     private fun isInResult(): Boolean {
         val cases = sequenceOf(
             images[Images.Result] to locations.resultScreenRegion,
+            images[Images.Bond] to locations.resultBondRegion,
             images[Images.MasterLevelUp] to locations.resultMasterLvlUpRegion,
             images[Images.MasterExp] to locations.resultMasterExpRegion
         )
 
         return cases.any { (image, region) -> image in region }
-    }
-
-    private fun isInBondScreen() = images[Images.Bond] in locations.resultBondRegion
-
-    private fun handleBondScreen(){
-        canScreenshotBondCE = true
-
-        if (prefs.screenshotBond){
-            screenshotDrops.screenshotBond()
-            messages.notify(ScriptNotify.BondLevelUp)
-            0.5.seconds.wait()
-        }
-
-        result()
     }
 
     private fun isBond10CEReward() =
@@ -279,21 +253,14 @@ class AutoBattle @Inject constructor(
     /**
      * It seems like we need to click on CE (center of screen) to accept them
      */
-    private fun bond10CEReward(){
-        if (prefs.screenshotBond && canScreenshotBondCE){
-            screenshotDrops.screenshotBond()
-            0.5.seconds.wait()
-            canScreenshotBondCE = false
-        }
-
+    private fun bond10CEReward() =
         locations.scriptArea.center.click()
-    }
 
     private fun isCeRewardDetails() =
         images[Images.CEDetails] in locations.resultCeRewardDetailsRegion
 
     private fun isDeathAnimation() =
-        isInBattle && FieldSlot.list
+        servantDeathPossible && FieldSlot.list
             .map { locations.battle.servantPresentRegion(it) }
             .count { it.exists(images[Images.ServantExist], similarity = 0.70) } in 1..2
 
@@ -312,10 +279,8 @@ class AutoBattle @Inject constructor(
      * Clicks through the reward screens.
      */
     private fun result() {
-        isInBattle = false
-        locations.resultClick.click(
-            times = if (prefs.screenshotBond) 5 else 15
-        )
+        servantDeathPossible = false
+        locations.resultClick.click(15)
         storySkipPossible = true
     }
 
@@ -323,8 +288,6 @@ class AutoBattle @Inject constructor(
         images[Images.MatRewards] in locations.resultMatRewardsRegion
 
     private fun dropScreen() {
-        canScreenshotBondCE = false
-
         ceDropsTracker.lookForCEDrops()
         matTracker.parseMaterials()
         screenshotDrops.screenshotDrops()
@@ -332,41 +295,7 @@ class AutoBattle @Inject constructor(
         locations.resultMatRewardsRegion.click()
     }
 
-    private fun isInOrdealCallOutOfPodsScreen(): Boolean {
-        // Lock the Ordeal Call for JP server
-        if (prefs.gameServer !is GameServer.Jp) return false
-
-        return images[Images.Close] in locations.ordealCallOutOfPodsRegion
-    }
-
-    private fun ordealCallOutOfPods() {
-        locations.ordealCallOutOfPodsClick.click()
-        // Count the current run
-        state.nextRun()
-
-        2.seconds.wait()
-        val isBlackScreen = locations.npStartedRegion.isBlack()
-        if (isBlackScreen){
-            locations.menuScreenRegion.exists(
-                images[Images.Menu],
-                similarity = 0.7,
-                timeout = 15.seconds
-            )
-        }
-        throw BattleExitException(ExitReason.StormPodRanOut)
-    }
-
-    private fun findRepeatButton(): Match? {
-        var match = locations.continueRegion.find(images[Images.Repeat])
-
-        // for TranslateFGO where the Repeat button is in English
-        if (match == null && prefs.gameServer is GameServer.Jp) {
-            match = locations.continueRegion.find(images[Images.Repeat, GameServer.default])
-        }
-        return match
-    }
-
-    private fun isRepeatScreen() = findRepeatButton() != null
+    private fun isRepeatScreen() = images[Images.Repeat] in locations.continueRegion
 
     private fun repeatQuest() {
         // Needed to show we don't need to enter the "StartQuest" function
@@ -376,7 +305,7 @@ class AutoBattle @Inject constructor(
         // Pressing Continue option after completing a quest, resetting the state as would occur in "Menu" function
         battle.resetState()
 
-        val continueButtonRegion = findRepeatButton()?.region
+        val continueButtonRegion = locations.continueRegion.find(images[Images.Repeat])?.region
             ?: return
 
         // If Boost items are usable, Continue button shifts to the right
@@ -405,9 +334,6 @@ class AutoBattle @Inject constructor(
         locations.resultFriendRequestRejectClick.click()
     }
 
-    private fun isInInterludeEndScreen() =
-        images[Images.Close] in locations.interludeEndScreenClose
-
     /**
      * Checks if FGO is on the quest reward screen for Mana Prisms, SQ, ...
      */
@@ -430,8 +356,6 @@ class AutoBattle @Inject constructor(
 
     // Selections Support option
     private fun support() {
-        canScreenshotBondCE = false
-
         support.selectSupport()
 
         if (!isContinuing) {
@@ -465,21 +389,12 @@ class AutoBattle @Inject constructor(
         prefs.gameServer.betterFgo && locations.npStartedRegion.isWhite()
 
     /**
-     * Black screen probably means we're between waves.
-     */
-    private fun isBetweenWaves() =
-        isInBattle && locations.npStartedRegion.isBlack()
-
-    /**
-     * Taps in the bottom right a few times to trigger NP skip in BetterFGO.
+     * Taps in the top right a few times to trigger NP skip in BetterFGO.
      */
     private fun skipNp() {
         0.6.seconds.wait()
         locations.battle.extraInfoWindowCloseClick.click(5)
     }
-
-    private fun isRankUp() =
-        images[Images.RankUp] in locations.rankUpRegion
 
     /**
      * Starts the quest after the support has already been selected. The following features are done optionally:
@@ -487,9 +402,7 @@ class AutoBattle @Inject constructor(
      * 2. A boost item is selected if [IPreferences.boostItemSelectionMode] is set (needed in some events)
      * 3. The story is skipped if [IPreferences.storySkip] is activated
      */
-    private
-
-    fun startQuest() {
+    private fun startQuest() {
         partySelection.selectParty()
 
         locations.menuStartQuestClick.click()
@@ -502,21 +415,17 @@ class AutoBattle @Inject constructor(
 
     /**
      * Will show a toast informing the user of number of runs and how many apples have been used so far.
-     * Also shows CE drop count (if any have dropped).
      */
-    private fun showRefillsAndRunsMessage() {
+    private fun showRefillsAndRunsMessage() =
         messages.notify(
             ScriptNotify.BetweenRuns(
                 refills = refill.timesRefilled,
-                runs = state.runs,
-                ceDrops = ceDropsTracker.count
+                runs = state.runs
             )
         )
-    }
 
     private fun afterSelectingQuest() {
-        // delay so refill with copper is not disturbed
-        2.5.seconds.wait()
+        1.5.seconds.wait()
 
         if (isInventoryFull()) {
             throw BattleExitException(ExitReason.InventoryFull)
