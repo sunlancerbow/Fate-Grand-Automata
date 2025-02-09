@@ -1,13 +1,16 @@
+import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
     id("kotlin-parcelize")
     id("dagger.hilt.android.plugin")
     id("com.google.devtools.ksp")
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
-    compileSdk = 34
+    compileSdk = 35
     ndkVersion = "21.3.6528147"
 
     compileOptions {
@@ -17,6 +20,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     kotlinOptions {
@@ -29,10 +33,6 @@ android {
         freeCompilerArgs += "-opt-in=androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi"
     }
 
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.kotlinCompilerExtensionVersion.get()
-    }
-
     androidResources {
         generateLocaleConfig = true
     }
@@ -40,7 +40,7 @@ android {
     defaultConfig {
         applicationId = "io.github.fate_grand_automata"
         minSdk = 24
-        targetSdk = 33
+        targetSdk = 35
         versionCode = System.getenv("FGA_VERSION_CODE")?.toInt() ?: 1
         versionName = System.getenv("FGA_VERSION_NAME") ?: System.getenv("FGA_VERSION_CODE") ?: "0.1.0"
     }
@@ -105,7 +105,7 @@ dependencies {
     implementation(libs.androidx.recyclerview)
     implementation(libs.androidx.constraintlayout)
 
-    implementation(libs.opencv.android)
+    implementation(libs.opencv)
     implementation(libs.tesseract4android)
 
     implementation(libs.lifecycle.viewmodel.ktx)
@@ -141,5 +141,7 @@ dependencies {
     implementation(libs.accompanist.permissions)
 
     implementation(libs.google.android.play.update.ktx)
+    implementation(libs.coil)
+    implementation(libs.coil.gif)
 
 }

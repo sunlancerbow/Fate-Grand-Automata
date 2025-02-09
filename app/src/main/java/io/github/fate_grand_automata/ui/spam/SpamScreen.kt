@@ -2,10 +2,12 @@ package io.github.fate_grand_automata.ui.spam
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -13,7 +15,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Card
-import androidx.compose.material3.Divider
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -64,7 +67,7 @@ fun SpamScreen(
                 summary = stringResource(R.string.p_spam_summary)
             )
 
-            Divider()
+            HorizontalDivider()
         }
 
         item {
@@ -97,7 +100,7 @@ fun SpamScreen(
                 }
             }
 
-            Divider()
+            HorizontalDivider()
         }
 
         item {
@@ -112,7 +115,7 @@ fun SpamScreen(
         }
 
         item {
-            Divider(
+            HorizontalDivider(
                 modifier = Modifier.padding(vertical = 16.dp)
             )
 
@@ -125,7 +128,9 @@ fun SpamScreen(
 
         item {
             LazyRow(
-                contentPadding = PaddingValues(16.dp, 5.dp)
+                contentPadding = PaddingValues(10.dp, 5.dp),
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                modifier = Modifier.fillMaxWidth()
             ) {
                 items(vm.presets) { preset ->
                     HeadingButton(
@@ -213,19 +218,27 @@ private fun SpamView(
     Column {
         Card(
             modifier = Modifier
-                .padding(16.dp)
+                .padding(16.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         ) {
             NpSpamView(spamConfig = selectedConfig.np)
         }
 
         Card(
             modifier = Modifier
-                .padding(horizontal = 16.dp)
+                .padding(horizontal = 16.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         ) {
             Column {
                 selectedConfig.skills.mapIndexed { index, skillConfig ->
                     if (index != 0) {
-                        Divider()
+                        HorizontalDivider()
                     }
 
                     SkillSpamView(
@@ -247,7 +260,7 @@ private fun SelectSpamMode(
     val dialog = listDialog(
         selected = selected,
         onSelectedChange = onSelectChange,
-        entries = SpamEnum.values().associateWith { stringResource(it.stringRes) },
+        entries = SpamEnum.entries.associateWith { stringResource(it.stringRes) },
         title = stringResource(R.string.spam)
     )
 
@@ -269,7 +282,7 @@ private fun SelectTarget(
     val dialog = listDialog(
         selected = selected,
         onSelectedChange = onSelectChange,
-        entries = SkillSpamTarget.values().associateWith { it.toString() },
+        entries = SkillSpamTarget.entries.associateWith { it.toString() },
         title = stringResource(R.string.spam_target)
     )
 

@@ -76,7 +76,7 @@ class ImageLoader @Inject constructor(
         Images.Retry -> "retry.png"
         Images.Withdraw -> "withdraw.png"
         Images.LotteryBoxFinished -> "lottery.png"
-        Images.LotteryLineupUpdated -> "lottery_lineup_updated.png"
+        Images.LotteryTransition -> "lottery_transition.png"
         Images.PresentBoxFull -> "StopGifts.png"
         Images.MasterExp -> "master_exp.png"
         Images.MasterLevelUp -> "master_lvl_up.png"
@@ -85,10 +85,14 @@ class ImageLoader @Inject constructor(
         Images.FPSummonContinue -> "fp_continue.png"
         Images.SkillTen -> "skill_ten.png"
         Images.Stun -> "stun.png"
+        Images.StunBuster -> "stun_buster.png"
+        Images.StunArts -> "stun_arts.png"
+        Images.StunQuick -> "stun_quick.png"
         Images.Immobilized -> "immobilized.png"
         Images.SelectedParty -> "selected_party.png"
         Images.SilverXP -> "SilverXP.png"
         Images.GoldXP -> "GoldXP.png"
+        Images.Gold5StarXP -> "Gold5StarXP.png"
         Images.GiftBoxCheck -> "gift_box_check.png"
         Images.GiftBoxScrollEnd -> "gift_box_scroll_end.png"
         Images.DropCE -> "drop_ce.png"
@@ -98,6 +102,10 @@ class ImageLoader @Inject constructor(
         Images.SupportExtra -> "support_extra.png"
         Images.SupportNotFound -> "support_not_found.png"
         Images.Support -> "support.png"
+        Images.SupportScrollBarTop -> "support_scrollbar_top.png"
+        Images.SupportScrollBarMoved -> "support_scrollbar_moved.png"
+        Images.SupportScrollBarBottom -> "support_scrollbar_bottom.png"
+        Images.SupportRefresh -> "support_refresh.png"
         Images.ServantCheckSupport -> "servant_check_support.png"
         Images.BattleMenu -> "battle_menu.png"
         Images.EmptyEnhance -> "empty_enhance.png"
@@ -125,6 +133,7 @@ class ImageLoader @Inject constructor(
         Images.Ok -> "ok.png"
         Images.OkKR -> "ok-kr.png"
         Images.Execute -> "execute.png"
+        Images.SupportBlankCE -> "support_blank_ce.png"
     }
 
     override operator fun get(img: Images, gameServer: GameServer?): Pattern = synchronized(regionCachedPatterns) {
@@ -209,6 +218,8 @@ val MaterialEnum.drawable
         MaterialEnum.AmnestyBell -> R.drawable.mat_amnesty_bell
         MaterialEnum.CeremonialBlade -> R.drawable.mat_ceremonial_blade
         MaterialEnum.UnforgettableAshes -> R.drawable.mat_ashes
+        MaterialEnum.ObsidianEdge -> R.drawable.mat_obsidian_edge
+        MaterialEnum.VestigeOfMadness -> R.drawable.mat_vestige
 
         MaterialEnum.Seed -> R.drawable.mat_seed
         MaterialEnum.GhostLantern -> R.drawable.mat_ghost_lantern
@@ -231,6 +242,10 @@ val MaterialEnum.drawable
         MaterialEnum.DivineSpiritParticle -> R.drawable.mat_particle
         MaterialEnum.RainbowThreadBall -> R.drawable.mat_thread
         MaterialEnum.FantasyScales -> R.drawable.mat_fantasy_scales
+        MaterialEnum.Sunscale -> R.drawable.mat_sunscale
+        MaterialEnum.Converger -> R.drawable.mat_converger
+        MaterialEnum.FlowerOfTheEnd -> R.drawable.mat_flower_of_the_end
+        MaterialEnum.UniversalCube -> R.drawable.mat_universal_cube
 
         MaterialEnum.Claw -> R.drawable.mat_claw
         MaterialEnum.Heart -> R.drawable.mat_heart
@@ -250,10 +265,8 @@ val MaterialEnum.drawable
         MaterialEnum.StarShard -> R.drawable.mat_star_shard
         MaterialEnum.FruitOfEternity -> R.drawable.mat_fruit
         MaterialEnum.DemonFlameLantern -> R.drawable.mat_demon_lantern
-        MaterialEnum.ObsidianEdge -> R.drawable.mat_obsidian_edge
-        MaterialEnum.VestigeOfMadness -> R.drawable.mat_vestige
-        MaterialEnum.Sunscale -> R.drawable.mat_sunscale
-        MaterialEnum.Converger -> R.drawable.mat_converger
+        MaterialEnum.GoldenCauldron -> R.drawable.mat_golden_cauldron
+        MaterialEnum.MoonlightNucleus -> R.drawable.mat_moonlight_nucleus
 
         MaterialEnum.MonumentSaber -> R.drawable.mat_monument_saber
         MaterialEnum.MonumentArcher -> R.drawable.mat_monument_archer

@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    compileSdk = 34
+    compileSdk = 35
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -18,9 +18,6 @@ android {
 
     buildTypes {
         getByName("release") {
-            isMinifyEnabled = true
-//            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt")
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"))
         }
         create("ci") {
             initWith(getByName("release"))

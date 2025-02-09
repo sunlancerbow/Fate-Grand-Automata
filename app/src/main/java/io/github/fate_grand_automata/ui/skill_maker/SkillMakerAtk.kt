@@ -56,10 +56,10 @@ private fun SelectNps(
 
             val canSelect = numberOfCardsSelected + numberOfNPs + 1 <= 3
 
-            val selectedColor = when (servantNumber) {
-                1 -> R.color.colorServant1
-                2 -> R.color.colorServant2
-                3 -> R.color.colorServant3
+            val selectedColor = when (npSequence.indexOf("$servantNumber")) {
+                0 -> R.color.colorServant1
+                1 -> R.color.colorServant2
+                2 -> R.color.colorServant3
                 else -> R.color.colorAccent
             }
 
@@ -149,7 +149,7 @@ private fun CardsBeforeNp(
                     shape = MaterialTheme.shapes.medium,
                     color = animatedColorState,
                     modifier = Modifier
-                        .padding(5.dp),
+                        .padding(0.dp, 5.dp, 10.dp, 5.dp),
                     enabled = canSelect,
                     onClick = {
                         if (canSelect) {
@@ -227,6 +227,7 @@ fun SkillMakerAtk(
             contentAlignment = Alignment.Center,
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(40.dp, 0.dp)
         ) {
 
 

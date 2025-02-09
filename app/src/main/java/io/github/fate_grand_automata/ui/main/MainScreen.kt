@@ -19,7 +19,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material3.Card
-import androidx.compose.material3.Divider
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -194,13 +195,15 @@ private fun toggleOverlayService(
     if (ScriptRunnerService.serviceStarted.value) {
         ScriptRunnerService.stopService(context)
     } else {
-        ScriptRunnerService.startService(context)
-
         if (vm.prefs.wantsMediaProjectionToken) {
             if (ScriptRunnerService.mediaProjectionToken == null) {
                 startMediaProjection()
+                return
             }
         }
+
+        // if we already have a token or are using root mode
+        ScriptRunnerService.startService(context)
     }
 }
 
@@ -260,7 +263,11 @@ private fun MainScreenContent(
             item {
                 Card(
                     modifier = Modifier
-                        .padding(16.dp)
+                        .padding(16.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                        contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 ) {
                     Column {
                         Preference(
@@ -270,7 +277,7 @@ private fun MainScreenContent(
                             onClick = { navigate(MainScreenDestinations.BattleConfigs) }
                         )
 
-                        Divider()
+                        HorizontalDivider()
 
                         languagePref.ListPreference(
                             title = stringResource(R.string.p_app_language),
@@ -278,7 +285,7 @@ private fun MainScreenContent(
                             entries = LanguagePref.availableLanguages()
                         )
 
-                        Divider()
+                        HorizontalDivider()
 
                         Preference(
                             title = stringResource(R.string.p_more_options),
@@ -354,7 +361,11 @@ private fun AccessibilityServiceBlock(
     Card(
         modifier = Modifier
             .padding(horizontal = 16.dp)
-            .fillMaxWidth()
+            .fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+        )
     ) {
         Column(
             modifier = Modifier

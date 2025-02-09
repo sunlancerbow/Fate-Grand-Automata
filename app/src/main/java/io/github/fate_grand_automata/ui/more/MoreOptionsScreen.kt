@@ -8,7 +8,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -49,12 +51,16 @@ private fun MoreOptionsContent(
         Heading(stringResource(R.string.p_more_options))
 
         Tabbed(
-            items = MoreSettingsGroup.values().toList(),
+            items = MoreSettingsGroup.entries.toList(),
             heading = { Text(stringResource(it.stringRes)) },
             content = {
                 Card(
                     modifier = Modifier
-                        .padding(16.dp)
+                        .padding(16.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                        contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 ) {
                     LazyColumn(
                         contentPadding = PaddingValues(bottom = 16.dp)

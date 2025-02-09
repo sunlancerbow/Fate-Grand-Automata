@@ -73,7 +73,7 @@ fun Pref<Set<MaterialEnum>>.Materials() {
             selected = current,
             onSelectedChange = { current = it },
             prioritySelected = true,
-            items = MaterialEnum.values().toList()
+            items = MaterialEnum.entries.toList()
         ) { mat ->
             Material(mat)
 
@@ -93,7 +93,7 @@ fun Pref<Set<MaterialEnum>>.Materials() {
         modifier = Modifier
             .fillMaxWidth()
             .clickable { dialog.show() }
-            .heightIn(min = 70.dp)
+            .heightIn(min = 55.dp)
             .padding(vertical = 5.dp)
     ) {
         Text(

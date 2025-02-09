@@ -16,7 +16,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
-import androidx.compose.material3.Divider
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -141,7 +142,11 @@ private fun BattleConfigContent(
                 item {
                     Card(
                         modifier = Modifier
-                            .padding(16.dp)
+                            .padding(16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     ) {
                         Column {
                             config.name.EditTextPreference(
@@ -150,7 +155,7 @@ private fun BattleConfigContent(
                                 singleLine = true
                             )
 
-                            Divider()
+                            HorizontalDivider()
 
                             config.notes.EditTextPreference(
                                 title = stringResource(R.string.p_battle_config_notes)
@@ -163,7 +168,11 @@ private fun BattleConfigContent(
                     Card(
                         modifier = Modifier
                             .padding(horizontal = 16.dp)
-                            .padding(bottom = 16.dp)
+                            .padding(bottom = 16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     ) {
                         SkillCommandGroup(
                             config = config,
@@ -177,7 +186,11 @@ private fun BattleConfigContent(
                     Card(
                         modifier = Modifier
                             .padding(horizontal = 16.dp)
-                            .padding(bottom = 16.dp)
+                            .padding(bottom = 5.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     ) {
                         Column {
                             Row(
@@ -217,7 +230,7 @@ private fun BattleConfigContent(
                                 PartySelection(config)
                             }
 
-                            Divider()
+                            HorizontalDivider()
 
                             val cardPriority by vm.cardPriority.collectAsState(null)
 
@@ -274,7 +287,12 @@ private fun CardPrioritySummary(cardPriority: CardPriorityPerWave) {
                     style = MaterialTheme.typography.bodyMedium
                 )
 
-                Card {
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                        contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                ) {
                     val priorityString = buildAnnotatedString {
                         priorities.forEachIndexed { index, it ->
                             if (index != 0) {
